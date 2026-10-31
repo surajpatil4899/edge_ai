@@ -45,6 +45,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,7 +75,18 @@ class MainActivity : ComponentActivity() {
         val debuggable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
         setContent {
             MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
-                AssistantScreen(showBridgeSwitch = debuggable, onStart = ::start, onStop = ::stop, onEnroll = ::enroll, onNotWake = ::enrollNotWake)
+                MainScreen(
+                    voice = {
+                        VoiceTab(showBridgeSwitch = debuggable, onStart = ::start, onStop = ::stop, onEnroll = ::enroll, onNotWake = ::enrollNotWake)
+                    },
+                    chat = {
+                        ChatTab(
+                            onLoadModel = { LlmServer.start(this) },
+                            onUnloadModel = { LlmServer.stop() },
+                            onSend = { text -> lifecycleScope.launch(Dispatchers.IO) { LlmChat.send(this@MainActivity, text) } },
+                        )
+                    },
+                )
             }
         }
     }
@@ -105,10 +124,35 @@ class MainActivity : ComponentActivity() {
     private fun stop() {
         stopService(Intent(this, ListenerService::class.java))
     }
+
+    override fun onDestroy() {
+        if (isFinishing) LlmServer.stop()
+        super.onDestroy()
+    }
 }
 
 @Composable
-private fun AssistantScreen(
+private fun MainScreen(voice: @Composable () -> Unit, chat: @Composable () -> Unit) {
+    var tab by rememberSaveable { mutableIntStateOf(0) }
+    Scaffold { padding ->
+        Column(Modifier.fillMaxSize().padding(padding)) {
+            Text(
+                "Edge Assistant",
+                Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            PrimaryTabRow(selectedTabIndex = tab) {
+                Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Voice") })
+                Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Chat") })
+            }
+            if (tab == 0) voice() else chat()
+        }
+    }
+}
+
+@Composable
+private fun VoiceTab(
     showBridgeSwitch: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
@@ -125,12 +169,11 @@ private fun AssistantScreen(
     val notWakeCount by AssistantState.notWakeCount.collectAsStateWithLifecycle()
     val active = status != Status.Stopped && status != Status.Error
 
-    Scaffold { padding ->
+    run {
         Column(
-            Modifier.fillMaxSize().padding(padding).padding(16.dp),
+            Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Edge Assistant", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
             StatusCard(status)
             LinearProgressIndicator(
                 progress = { if (active) level else 0f },

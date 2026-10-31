@@ -31,7 +31,13 @@ android {
     androidResources { noCompress += listOf("onnx", "ort") }
 
     // abiFilters drops 32-bit code, but both native AARs still carry a 32-bit libonnxruntime.so that collide at merge.
-    packaging { jniLibs { excludes += listOf("lib/x86/**", "lib/armeabi-v7a/**") } }
+    packaging {
+        jniLibs {
+            excludes += listOf("lib/x86/**", "lib/armeabi-v7a/**")
+            // The bundled llama-server executable must exist as a real file to be launched.
+            useLegacyPackaging = true
+        }
+    }
 }
 
 dependencies {
@@ -49,6 +55,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.19.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20250517") // real org.json for JVM unit tests (Android's is a stub)
 }
 
 // Model files live in the repo-level models/ dir (downloaded by scripts/download_models.sh)
@@ -80,4 +87,15 @@ val copyModels by tasks.registering(Sync::class) {
         }
     }
 }
-tasks.named("preBuild") { dependsOn(copyModels) }
+
+// Chat tab: the function schema (single source: finetune/functions.json) and, for arm64 phones, the
+// stripped llama.cpp server runtime prepared under models/llm/llama-runtime-arm64.
+val copyFunctions by tasks.registering(Copy::class) {
+    from(rootProject.layout.projectDirectory.file("../finetune/functions.json"))
+    into(layout.projectDirectory.dir("src/main/assets"))
+}
+val copyLlamaRuntime by tasks.registering(Sync::class) {
+    from(modelsDir.dir("llm/llama-runtime-arm64"))
+    into(layout.projectDirectory.dir("src/main/jniLibs/arm64-v8a"))
+}
+tasks.named("preBuild") { dependsOn(copyModels, copyFunctions, copyLlamaRuntime) }

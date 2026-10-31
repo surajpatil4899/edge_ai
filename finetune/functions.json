@@ -1,0 +1,275 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "set_alarm",
+      "description": "Set an alarm on the phone's clock.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "string",
+            "description": "The time exactly as spoken, e.g. '6 am', '5:45 pm', 'seven thirty', '8:30 tonight'."
+          },
+          "day": {
+            "type": "string",
+            "enum": [
+              "today",
+              "tomorrow",
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "sunday"
+            ],
+            "description": "Only if the user names a day."
+          },
+          "label": {
+            "type": "string",
+            "description": "What the alarm is for, if said."
+          }
+        },
+        "required": [
+          "time"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_timer",
+      "description": "Start a countdown timer.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "string",
+            "description": "The duration exactly as spoken, e.g. '10 minutes', '1 hour 30 minutes', 'half an hour'."
+          }
+        },
+        "required": [
+          "duration"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "create_reminder",
+      "description": "Remind the user about something, optionally at a time.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "What to remind about, e.g. 'buy milk'."
+          },
+          "time": {
+            "type": "string",
+            "description": "The time exactly as spoken, if given."
+          },
+          "day": {
+            "type": "string",
+            "enum": [
+              "today",
+              "tomorrow",
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "sunday"
+            ],
+            "description": "Only if the user names a day."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "call_contact",
+      "description": "Phone call a contact by name, or a number.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "contact": {
+            "type": "string",
+            "description": "Contact name as spoken, e.g. 'mom', 'Rahul', or digits."
+          }
+        },
+        "required": [
+          "contact"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "send_message",
+      "description": "Send a text message to a contact.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "contact": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "description": "The message body only."
+          }
+        },
+        "required": [
+          "contact",
+          "message"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_flashlight",
+      "description": "Turn the flashlight (torch) on or off.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "on",
+              "off"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_volume",
+      "description": "Change ringer/media volume or sound mode.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "mute",
+              "unmute",
+              "vibrate",
+              "max"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_do_not_disturb",
+      "description": "Turn Do Not Disturb on or off.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "on",
+              "off"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "media_control",
+      "description": "Control music or video playback.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "play",
+              "pause",
+              "next",
+              "previous",
+              "stop"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "open_app",
+      "description": "Open an app by name.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string",
+            "description": "App name as spoken, e.g. 'camera', 'WhatsApp'."
+          }
+        },
+        "required": [
+          "app"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "dismiss_alarm",
+      "description": "Turn off, stop or snooze the ringing or next alarm.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "dismiss",
+              "snooze"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,66 @@
+{"text": "Set an alarm for 6 am tomorrow", "source": "clean", "expect": {"name": "set_alarm", "args": {"day": "tomorrow", "time": "6 am"}}}
+{"text": "Wake me up at 7:30", "source": "clean", "expect": {"name": "set_alarm", "args": {"time": "7:30"}}}
+{"text": "Set an alarm for 5:45 pm", "source": "clean", "expect": {"name": "set_alarm", "args": {"time": "5:45 pm"}}}
+{"text": "Alarm at 10 pm for medicine", "source": "clean", "expect": {"name": "set_alarm", "args": {"label": "medicine", "time": "10 pm"}}}
+{"text": "Set an alarm for 6 am on Monday", "source": "clean", "expect": {"name": "set_alarm", "args": {"day": "monday", "time": "6 am"}}}
+{"text": "Set a timer for 10 minutes", "source": "clean", "expect": {"name": "set_timer", "args": {"duration": "10 minutes"}}}
+{"text": "Start a timer for 1 hour 30 minutes", "source": "clean", "expect": {"name": "set_timer", "args": {"duration": "1 hour 30 minutes"}}}
+{"text": "Timer for 45 seconds", "source": "clean", "expect": {"name": "set_timer", "args": {"duration": "45 seconds"}}}
+{"text": "Set a 5 minute timer", "source": "clean", "expect": {"name": "set_timer", "args": {"duration": "5 minute"}}}
+{"text": "Remind me to buy milk at 5 pm", "source": "clean", "expect": {"name": "create_reminder", "args": {"text": "buy milk", "time": "5 pm"}}}
+{"text": "Remind me to call the bank tomorrow", "source": "clean", "expect": {"name": "create_reminder", "args": {"text": "call the bank", "day": "tomorrow"}}}
+{"text": "Remind me that I have a doctor's appointment tomorrow at 9 am", "source": "clean", "expect": {"name": "create_reminder", "args": {"text": "doctor's appointment", "day": "tomorrow", "time": "9 am"}}}
+{"text": "Remind me to take my medicine at 8:30 tonight", "source": "clean", "expect": {"name": "create_reminder", "args": {"text": "take my medicine", "time": "8:30 tonight"}}}
+{"text": "Call mom", "source": "clean", "expect": {"name": "call_contact", "args": {"contact": "mom"}}}
+{"text": "Call Rahul", "source": "clean", "expect": {"name": "call_contact", "args": {"contact": "Rahul"}}}
+{"text": "Phone 9876543210", "source": "clean", "expect": {"name": "call_contact", "args": {"contact": "9876543210"}}}
+{"text": "Give dad a call", "source": "clean", "expect": {"name": "call_contact", "args": {"contact": "dad"}}}
+{"text": "Send a message to Rahul saying I will be late", "source": "clean", "expect": {"name": "send_message", "args": {"contact": "Rahul", "message": "I will be late"}}}
+{"text": "Text mom that I reached home", "source": "clean", "expect": {"name": "send_message", "args": {"contact": "mom", "message": "I reached home"}}}
+{"text": "Message Priya good morning", "source": "clean", "expect": {"name": "send_message", "args": {"contact": "Priya", "message": "good morning"}}}
+{"text": "Turn on the flashlight", "source": "clean", "expect": {"name": "set_flashlight", "args": {"state": "on"}}}
+{"text": "Turn off the torch", "source": "clean", "expect": {"name": "set_flashlight", "args": {"state": "off"}}}
+{"text": "Torch on", "source": "clean", "expect": {"name": "set_flashlight", "args": {"state": "on"}}}
+{"text": "Volume up", "source": "clean", "expect": {"name": "set_volume", "args": {"action": "up"}}}
+{"text": "Mute the phone", "source": "clean", "expect": {"name": "set_volume", "args": {"action": "mute"}}}
+{"text": "Put my phone on vibrate", "source": "clean", "expect": {"name": "set_volume", "args": {"action": "vibrate"}}}
+{"text": "Turn on do not disturb", "source": "clean", "expect": {"name": "set_do_not_disturb", "args": {"state": "on"}}}
+{"text": "Disable DND", "source": "clean", "expect": {"name": "set_do_not_disturb", "args": {"state": "off"}}}
+{"text": "Pause the music", "source": "clean", "expect": {"name": "media_control", "args": {"action": "pause"}}}
+{"text": "Next song", "source": "clean", "expect": {"name": "media_control", "args": {"action": "next"}}}
+{"text": "Play music", "source": "clean", "expect": {"name": "media_control", "args": {"action": "play"}}}
+{"text": "Open WhatsApp", "source": "clean", "expect": {"name": "open_app", "args": {"app": "WhatsApp"}}}
+{"text": "Open the camera", "source": "clean", "expect": {"name": "open_app", "args": {"app": "camera"}}}
+{"text": "Stop the alarm", "source": "clean", "expect": {"name": "dismiss_alarm", "args": {"action": "dismiss"}}}
+{"text": "Snooze", "source": "clean", "expect": {"name": "dismiss_alarm", "args": {"action": "snooze"}}}
+{"text": "Set a alarm for 6 a.m", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 a.m"}}}
+{"text": "Set a alarm for 2am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "2am"}}}
+{"text": "Is set alarm for 9 am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "9 am"}}}
+{"text": "It's volume up", "source": "asr_real", "expect": {"name": "set_volume", "args": {"action": "up"}}}
+{"text": "Saturn reminded that I want to go to hospital tomorrow", "source": "asr_real", "expect": {"name": "create_reminder", "args": {"text": "go to hospital", "day": "tomorrow"}}}
+{"text": "Calm mom", "source": "asr_real", "expect": {"name": "call_contact", "args": {"contact": "mom"}}}
+{"text": "It's called Sanket", "source": "asr_real", "expect": {"name": "call_contact", "args": {"contact": "Sanket"}}}
+{"text": "Set in alarm for 7:30 tomorrow morning", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"day": "tomorrow", "time": "7:30 morning"}}}
+{"text": "Said an alarm for seven thirty to-morrow morning", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"day": "tomorrow", "time": "seven thirty morning"}}}
+{"text": "Send the text to Rawl saying I will be late", "source": "asr_real", "expect": {"name": "send_message", "args": {"contact": "Rawl", "message": "I will be late"}}}
+{"text": "Purn on the flashlight", "source": "asr_real", "expect": {"name": "set_flashlight", "args": {"state": "on"}}}
+{"text": "Okay edge turn on the flashlight", "source": "asr_real", "expect": {"name": "set_flashlight", "args": {"state": "on"}}}
+{"text": "Set a timer for ten minutes,", "source": "asr_real", "expect": {"name": "set_timer", "args": {"duration": "ten minutes"}}}
+{"text": "Remind me to buy milk at six p. m.", "source": "asr_real", "expect": {"name": "create_reminder", "args": {"text": "buy milk", "time": "six p. m."}}}
+{"text": "Set alarm for 6 am.", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 am"}}}
+{"text": "Is timer for 5 minutes", "source": "asr_synthetic", "expect": {"name": "set_timer", "args": {"duration": "5 minutes"}}}
+{"text": "It's open camera", "source": "asr_synthetic", "expect": {"name": "open_app", "args": {"app": "camera"}}}
+{"text": "Turn of the torch", "source": "asr_synthetic", "expect": {"name": "set_flashlight", "args": {"state": "off"}}}
+{"text": "Pass the music", "source": "asr_synthetic", "expect": {"name": "media_control", "args": {"action": "pause"}}}
+{"text": "Send message to mom saying coming home", "source": "asr_synthetic", "expect": {"name": "send_message", "args": {"contact": "mom", "message": "coming home"}}}
+{"text": "Remind me to pay electricity bill on Friday", "source": "asr_synthetic", "expect": {"name": "create_reminder", "args": {"text": "pay electricity bill", "day": "friday"}}}
+{"text": "What are you doing", "source": "none", "expect": null}
+{"text": "What are you doing Dave", "source": "none", "expect": null}
+{"text": "Is what else you can do", "source": "none", "expect": null}
+{"text": "It's", "source": "none", "expect": null}
+{"text": "How are you", "source": "none", "expect": null}
+{"text": "The traffic was terrible this morning", "source": "none", "expect": null}
+{"text": "Okay", "source": "none", "expect": null}
+{"text": "I am very happy to be able to speak to you today", "source": "none", "expect": null}
+{"text": "What is the weather today", "source": "none", "expect": null}
+{"text": "Thank you", "source": "none", "expect": null}

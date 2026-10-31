@@ -125,6 +125,9 @@ class ListenerService : Service() {
             is PipelineEvent.Command -> {
                 Log.i(TAG, "command: \"${event.text}\" heard \"${event.heard}\" (${event.audioSeconds}s audio, ASR ${event.asrMillis} ms)")
                 AssistantState.add(LogEntry.Command(now, event.text, event.audioSeconds, event.asrMillis))
+                if (LlmChat.routeVoice.value && LlmServer.state.value is LlmServer.State.Ready) {
+                    thread(name = "llm-voice") { LlmChat.send(this, event.text, fromVoice = true) }
+                }
                 AssistantState.setStatus(Status.WaitingForWake)
             }
             is PipelineEvent.Ignored -> {
