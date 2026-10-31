@@ -1,0 +1,17 @@
+# Lines read aloud for the phone session recording (eval_session.py scores ASR against these).
+hey edge
+hey edge set an alarm for six am
+hey edge call mom
+hey edge set a timer for ten minutes
+hey edge remind me to buy milk at five pm
+hey edge turn on the flashlight
+set an alarm for six am
+call mom
+set a timer for ten minutes
+remind me to buy milk at five pm
+turn on the flashlight
+set a reminder that i want to go to the hospital tomorrow
+send a message to rahul saying i will be late
+set an alarm for seven thirty tomorrow morning
+what is the weather today
+turn off the alarm

@@ -1,0 +1,12 @@
+sherpa-onnx==2.0.1
+sherpa-onnx-core==2.0.1
+numpy==2.5.4
+sentencepiece==0.2.2
+sounddevice==0.5.6
+soundfile==0.14.0
+# personal wake-word training (train_wakeword.py)
+onnxruntime==1.31.1
+# emulator microphone control (emulator_mic.py)
+grpcio==1.85.1
+grpcio-tools==1.85.1
+protobuf==7.36.2

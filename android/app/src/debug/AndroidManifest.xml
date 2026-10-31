@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Loopback socket for the laptop mic bridge (prototype/mic_bridge.py); debug builds only. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
