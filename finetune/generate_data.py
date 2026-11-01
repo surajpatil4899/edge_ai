@@ -48,8 +48,8 @@ def spoken_time():
         base = f"{hs} {MIN_WORDS.get(m, str(m))}"
     else:
         base = f"{h}:{m:02d}"
-    if mer and R.random() < 0.15 and mer in ("am", "pm"):
-        return base + mer  # "6am"
+    if mer and R.random() < 0.15 and mer in ("am", "pm") and base[-1].isdigit():
+        return base + mer  # "6am" (digits only: "thirtypm" would not parse)
     return f"{base} {mer}".strip()
 
 
@@ -88,6 +88,10 @@ TASKS = ["buy milk", "call the bank", "take my medicine", "pay the electricity b
          "feed the dog", "visit grandma", "pay the rent", "collect the parcel", "recharge my phone", "go for a walk",
          "prepare the presentation", "wish Rahul happy birthday", "take out the trash", "buy groceries", "visit the dentist",
          "finish the assignment", "order the cake", "transfer money to dad", "check the gas", "lock the door"]
+EVENTS = ["a doctor's appointment", "doctors appointment", "a dentist appointment", "a meeting with Rahul", "a meeting",
+          "an exam", "an interview", "a flight", "a call with the team", "a parent teacher meeting", "a haircut appointment",
+          "a party", "a presentation", "a train to catch", "a client call", "my driving test", "a yoga class", "a wedding",
+          "an eye checkup", "the gym", "my sister's birthday party", "a bank appointment", "a video call with mom", "an online class"]
 LABELS = ["medicine", "gym", "work", "the meeting", "yoga", "school", "my flight", "prayer", "the train", "office"]
 APPS = ["WhatsApp", "YouTube", "camera", "Instagram", "Gmail", "Google Maps", "maps", "Spotify", "settings", "calculator",
         "Paytm", "PhonePe", "Google Pay", "the gallery", "photos", "Chrome", "the browser", "Facebook", "Twitter", "Netflix",
@@ -114,6 +118,10 @@ TEMPLATES = {
         "remind me to {task} {day} at {time}", "remind me at {time} to {task}", "set a reminder to {task}",
         "set a reminder to {task} at {time}", "don't let me forget to {task}", "reminder to {task} {day} at {time}",
         "remind me that I have to {task} {day}", "please remind me to {task} at {time} {day}", "create a reminder to {task}",
+        "remind me that I have {event} {day} at {time}", "remind me that I have {event} {day} {time}",
+        "remind me I have {event} at {time}", "remind me about {event} {day}", "remind me about {event} at {time}",
+        "I have {event} {day} at {time} remind me", "remind me that I have {event} at {time} {day}",
+        "remind me that there is {event} {day}",
     ],
     "call_contact": [
         "call {contact}", "phone {contact}", "give {contact} a call", "dial {contact}", "ring {contact}", "make a call to {contact}",
@@ -152,6 +160,14 @@ FIXED = {  # (phrase, args)
 }
 OPEN_APP = ["open {app}", "launch {app}", "start {app}", "open the {app} app", "can you open {app}", "go to {app}", "show me {app}"]
 
+NAME_CHAT = ["what are you doing {n}", "thanks {n}", "thank you {n}", "hey {n} how are you", "{n} come here",
+             "good morning {n}", "where is {n}", "I am going out with {n}", "{n} is my friend", "bye {n}", "hi {n}",
+             "{n} said he will come", "did {n} reach home", "{n} is calling me", "I talked to {n} yesterday"]
+TIME_CHAT = ["I woke up at {t} today", "the meeting was at {t}", "I slept at {t} last night", "the shop opens at {t}",
+             "my train leaves at {t}", "it is already {t}", "I usually wake up at {t}", "the match starts at {t}",
+             "yesterday I reached office at {t}", "is the bank open at {t}", "what happens at {t}",
+             "I have a meeting tomorrow", "tomorrow is my birthday", "today is monday", "I was busy on friday"]
+
 NON_COMMANDS = [
     "what are you doing", "how are you", "thank you", "thanks", "okay", "ok", "hmm", "yes", "no", "hello", "hi there",
     "what is the weather today", "will it rain tomorrow", "tell me a joke", "who is the prime minister of India",
@@ -167,7 +183,8 @@ NON_COMMANDS = [
 ]
 
 # ---------------------------------------------------------------- transcription noise
-WAKE_RESIDUE = ["Is ", "It's ", "Okay edge ", "Okay, ", "A. ", "He ", "Edge, ", "And ", "Okay edge, ", "Ok ", "Is, "]
+WAKE_RESIDUE = ["Is ", "It's ", "Okay edge ", "Okay, ", "A. ", "He ", "Edge, ", "And ", "Okay edge, ", "Ok ", "Is, ",
+                "Which ", "Which, ", "Wich ", "What ", "We ", "Age, ", "Okay age "]
 CONFUSIONS = [  # (pattern on template words, replacements) - observed in Moonshine output from the phone
     (r"\bset an alarm\b", ["set in alarm", "said an alarm", "set a alarm", "set alarm", "and alarm"]),
     (r"\bset alarm\b", ["said alarm", "set a alarm", "set in alarm"]),
@@ -181,8 +198,26 @@ CONFUSIONS = [  # (pattern on template words, replacements) - observed in Moonsh
     (r"\bmessage\b", ["massage", "message"]),
     (r"\bflashlight\b", ["flash light", "flashlight"]),
     (r"\btext\b", ["takes", "text"]),
-    (r"\bvolume\b", ["volume", "valium"]),
+    (r"\bvolume\b", ["volume", "valium", "wear him", "value", "volume"]),
+    (r"\bwake me up\b", ["wakniak up", "make me up", "wake me a pet", "make me a pet", "wake meet up", "weak me up",
+                          "wake me", "wakey up", "we can be up", "wake up"]),
+    (r"\bremind me\b", ["remind me", "find me", "remain me"]),
 ]
+
+GARBLE_SWAPS = [("w", "v"), ("v", "w"), ("e", "a"), ("a", "e"), ("o", "a"), ("th", "d"), ("ck", "k"), ("sh", "s"),
+                ("m", "n"), ("n", "m"), ("p", "b"), ("t", "d"), ("i", "ee"), ("u", "a")]
+
+
+def garble_word(w: str) -> str:
+    """Letter-level corruption like a misheard word: substitute a sound, drop or merge letters."""
+    op = R.random()
+    if op < 0.5:
+        a, b = R.choice([s for s in GARBLE_SWAPS if s[0] in w] or [("", "")])
+        return w.replace(a, b, 1) if a else w
+    if op < 0.75 and len(w) > 4:
+        i = R.randrange(1, len(w) - 1)
+        return w[:i] + w[i + 1:]
+    return w + R.choice(["s", "e", "y", "ed"])
 
 
 def noisy(template_text: str) -> str:
@@ -194,6 +229,11 @@ def noisy(template_text: str) -> str:
             lit = re.sub(pat, R.choice(reps), lit, count=1)
     if R.random() < 0.08:  # drop a function word
         lit = re.sub(r"\b(the|a|an|for|to|me)\b ", "", lit, count=1)
+    if R.random() < 0.3:  # mishear one command word; slots stay intact so the model learns to lean on them
+        words = [w for w in re.findall(r"[a-z]{4,}", lit)]
+        if words:
+            w = R.choice(words)
+            lit = re.sub(rf"\b{w}\b", garble_word(w), lit, count=1)
     literals = lit.split(" \x00 ")
     out = []
     for i, literal in enumerate(literals):
@@ -218,6 +258,8 @@ def day_slot():
     d = R.choice(["tomorrow", "tomorrow", "today", "tonight"] + WEEKDAYS)
     if d == "tonight":
         return "tonight", "today"
+    if d == "tomorrow" and R.random() < 0.3:
+        return R.choice(["to-morrow", "to morrow", "tomorow", "tommorow", "tomorrow morning"]), "tomorrow"
     if d in WEEKDAYS:
         return R.choice([f"on {d}", f"this {d}", d, f"next {d}"]).replace(d, d.capitalize() if R.random() < 0.5 else d), d
     return d, d
@@ -244,6 +286,9 @@ def build(name: str, noise: bool):
             elif slot == "task":
                 v = R.choice(TASKS)
                 fills["task"], args["text"] = v, v
+            elif slot == "event":
+                v = R.choice(EVENTS)
+                fills["event"], args["text"] = v, re.sub(r"^(a|an|my|the) ", "", v)
             elif slot == "contact":
                 v = R.choice(CONTACTS + (NUMBERS if name == "call_contact" else []))
                 fills["contact"], args["contact"] = v, v
@@ -299,13 +344,21 @@ def main():
     a = p.parse_args()
     R.seed(a.seed)
 
-    eval_texts = {json.loads(l)["text"].lower().strip(" .,?") for l in open(os.path.join(HERE, "data", "eval_seed.jsonl"))}
+    eval_texts = {json.loads(l)["text"].lower().strip(" .,?") for name in ("eval_seed.jsonl", "eval_phone.jsonl")
+                  for l in open(os.path.join(HERE, "data", name))}
     names, weights = list(WEIGHTS), list(WEIGHTS.values())
     seen, rows = {}, []
     while len(rows) < a.n:
         noise = R.random() < a.noise
         if R.random() < a.no_call:
-            text, call = R.choice(NON_COMMANDS), None
+            kind = R.random()
+            if kind < 0.25:
+                text = R.choice(NAME_CHAT).format(n=R.choice([c for c in CONTACTS if not c.startswith(("my ", "the "))]))
+            elif kind < 0.45:
+                text = R.choice(TIME_CHAT).format(t=spoken_time())
+            else:
+                text = R.choice(NON_COMMANDS)
+            call = None
             if noise and R.random() < 0.5:
                 text = R.choice(WAKE_RESIDUE) + text
         else:

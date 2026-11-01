@@ -1,0 +1,18 @@
+{"text": "Which make me a pet 6 am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 am"}}}
+{"text": "Wakniak up at 6 am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 am"}}}
+{"text": "Wake me up at 6 am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 am"}}}
+{"text": "Turn on the flashlight", "source": "asr_real", "expect": {"name": "set_flashlight", "args": {"state": "on"}}}
+{"text": "Turn off the flashlight", "source": "asr_real", "expect": {"name": "set_flashlight", "args": {"state": "off"}}}
+{"text": "How are you being", "source": "none", "expect": null}
+{"text": "Volume up", "source": "asr_real", "expect": {"name": "set_volume", "args": {"action": "up"}}}
+{"text": "Wear him down", "source": "asr_real", "expect": {"name": "set_volume", "args": {"action": "down"}}}
+{"text": "Which set volume to maximum", "source": "asr_real", "expect": {"name": "set_volume", "args": {"action": "max"}}}
+{"text": "Remind me that I have doctors appointment tomorrow 6 a.m", "source": "asr_real", "expect": {"name": "create_reminder", "args": {"text": "doctors appointment", "day": "tomorrow", "time": "6 a.m"}}}
+{"text": "Set a alarm for 6 a.m", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 a.m"}}}
+{"text": "Remind me that I have a doctor's appointment tomorrow at 9 am", "source": "asr_real", "expect": {"name": "create_reminder", "args": {"text": "doctor's appointment", "day": "tomorrow", "time": "9 am"}}}
+{"text": "Is set alarm for 9 am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "9 am"}}}
+{"text": "It's volume up", "source": "asr_real", "expect": {"name": "set_volume", "args": {"action": "up"}}}
+{"text": "It's called Sanket", "source": "asr_real", "expect": {"name": "call_contact", "args": {"contact": "Sanket"}}}
+{"text": "What are you doing Dave", "source": "none", "expect": null}
+{"text": "Is what else you can do", "source": "none", "expect": null}
+{"text": "It's", "source": "none", "expect": null}

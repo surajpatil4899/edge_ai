@@ -34,3 +34,6 @@ prototype/test_clips/
 
 # emulator gRPC stubs, generated from the local SDK by emulator_mic.py
 prototype/.emu_grpc/
+
+# raw logs pulled from the phone (personal); curated phrases live in finetune/data/eval_phone.jsonl
+finetune/results/phone_*
