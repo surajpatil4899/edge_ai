@@ -28,7 +28,7 @@ android {
     buildFeatures { compose = true }
 
     // Models are read straight from the APK; compressing them only slows startup.
-    androidResources { noCompress += listOf("onnx", "ort") }
+    androidResources { noCompress += listOf("onnx", "ort", "gguf") }
 
     // abiFilters drops 32-bit code, but both native AARs still carry a 32-bit libonnxruntime.so that collide at merge.
     packaging {
@@ -61,6 +61,10 @@ dependencies {
 // Model files live in the repo-level models/ dir (downloaded by scripts/download_models.sh)
 // and are copied into the APK's assets at build time; they are too big to commit.
 val modelsDir = rootProject.layout.projectDirectory.dir("../models")
+// The command model and the function schema it was trained with ship together: a model prompted with another
+// schema's tool list is outside what it learned. `./gradlew assembleDebug -PcommandModel=v3` once v3 is trained.
+val commandModel = providers.gradleProperty("commandModel").getOrElse("v2")
+val commandSchema = mapOf("v2" to "functions_v2.json", "v3" to "functions.json").getValue(commandModel)
 val copyModels by tasks.registering(Sync::class) {
     from(modelsDir.dir("sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01")) {
         include("*.int8.onnx", "tokens.txt")
@@ -78,6 +82,11 @@ val copyModels by tasks.registering(Sync::class) {
         include("melspectrogram.onnx", "embedding_model.onnx")
         into("oww")
     }
+    // Command model (FunctionGemma fine-tuned in finetune/); change the file name to ship another version.
+    from(modelsDir.dir("llm")) {
+        include("functiongemma-edge-$commandModel-q8_0.gguf")
+        into("llm")
+    }
     into(layout.projectDirectory.dir("src/main/assets/models"))
     // Plain File so the configuration cache can serialize the action (script references can't be).
     val asrDir = modelsDir.dir("sherpa-onnx-moonshine-base-en-quantized-2026-02-27").asFile
@@ -88,10 +97,11 @@ val copyModels by tasks.registering(Sync::class) {
     }
 }
 
-// Chat tab: the function schema (single source: finetune/functions.json) and, for arm64 phones, the
+// Chat tab: the function schema matching the bundled model (finetune/functions*.json) and, for arm64 phones, the
 // stripped llama.cpp server runtime prepared under models/llm/llama-runtime-arm64.
 val copyFunctions by tasks.registering(Copy::class) {
-    from(rootProject.layout.projectDirectory.file("../finetune/functions.json"))
+    from(rootProject.layout.projectDirectory.file("../finetune/$commandSchema"))
+    rename { "functions.json" }
     into(layout.projectDirectory.dir("src/main/assets"))
 }
 val copyLlamaRuntime by tasks.registering(Sync::class) {

@@ -129,7 +129,7 @@ class VoicePipeline(assets: AssetManager, private val emit: (PipelineEvent) -> U
             val detected = wakeModel.accept(samples)
             history.append(samples)
             if (!listening && detected && clock >= wakeQuietUntil) {
-                emit(PipelineEvent.Wake("OKAY_EDGE"))
+                emit(PipelineEvent.Wake("OKAY_EDGE (score %.2f)".format(wakeModel.lastDetectionScore)))
                 // Fires within ~0.1-0.3 s of the phrase ending; replay a little so a no-pause command keeps its
                 // first word (any "Edge" tail is stripped later by commandText).
                 startListening(history.tail(minOf(history.size, PREROLL_SAMPLES)))
@@ -257,7 +257,8 @@ class VoicePipeline(assets: AssetManager, private val emit: (PipelineEvent) -> U
         private const val MAX_LISTEN_SECONDS = 15
         // People pause mid-command ("set an alarm... for six"); 0.6 s cut them off.
         private const val END_SILENCE_SECONDS = 0.8f
-        private const val MAX_COMMAND_SECONDS = 10f
+        // Commands take 1-5 s; a 13 s "command" in the field logs was background speech that Moonshine looped on.
+        private const val MAX_COMMAND_SECONDS = 8f
         private const val PAD_SAMPLES = SAMPLE_RATE / 5
         private const val PREROLL_SAMPLES = SAMPLE_RATE / 2
     }

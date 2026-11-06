@@ -37,3 +37,4 @@ prototype/.emu_grpc/
 
 # raw logs pulled from the phone (personal); curated phrases live in finetune/data/eval_phone.jsonl
 finetune/results/phone_*
+finetune/results/friend_logs_*/

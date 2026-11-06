@@ -3,14 +3,16 @@
   evaluate.py [--url http://127.0.0.1:8080] [--data data/eval_seed.jsonl] [--out results.jsonl]
 
 Sends each transcript exactly as the app does (developer turn + tools from functions.json, stop at
-<end_function_call>, temperature 0), parses the FunctionGemma call and reports:
-  - function accuracy: right function, or correctly no call for non-commands
-  - exact accuracy:    right function and every argument right
+<start_function_response>, temperature 0), parses the FunctionGemma calls and reports:
+  - function accuracy: right functions in the right order, or correctly no call for non-commands
+  - exact accuracy:    right functions and every argument right
+A row's "expect" is one call {name, args}, a list of calls (several actions in one sentence), or null.
 broken down by source (clean / asr_real / asr_synthetic / none), plus the errors.
 """
 
 import argparse
 import collections
+import difflib
 import json
 import os
 import re
@@ -20,15 +22,41 @@ from spoken import parse_duration, parse_time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SYSTEM = "You are a model that can do function calling with the following functions"
-FREE_TEXT = {"text", "message", "label"}
+FREE_TEXT = {"text", "message", "label", "query", "destination"}
+# App names are copied as heard ("what's up", "you tube"); the app matches them to installed apps by sound.
+FUZZY = {"app", "contact"}
 DEFAULTS = {}
-# Spoken-value fields are compared by meaning: "6 am" == "6 a.m" == "six am".
-BY_MEANING = {"time": parse_time, "duration": parse_duration}
 ESC = "<escape>"
+END_CALL = "<end_function_call>"
+STOP = "<start_function_response>"  # follows the last call; see the chat template
+
+# "6 hours", "in 20 minutes", "after an hour and a half" are delays, not clock times (twin of TimeResolver.relative).
+RELATIVE = re.compile(r"^(?:in|after)?\s*(.+?(?:hours?|hrs?|minutes?|mins?|seconds?|secs?|and a half))\s*(?:from now|later)?$", re.I)
+CLOCK_WORDS = re.compile(r"\b(past|to|before|after)\b", re.I)
+
+
+def parse_when(text: str):
+    """("in", seconds) for a delay, ("at", (hour, minute)) for a clock time, or None."""
+    m = RELATIVE.match(text.strip())
+    if m and not CLOCK_WORDS.search(m.group(1)):
+        seconds = parse_duration(m.group(1))
+        if seconds:
+            return "in", seconds
+    t = parse_time(text)
+    return ("at", t) if t is not None else None
+
+
+# Spoken-value fields are compared by meaning: "6 am" == "6 a.m" == "six am", "6 hours" == "in six hours".
+BY_MEANING = {"time": parse_when, "duration": parse_duration}
+
+
+def parse_calls(content: str) -> list[dict]:
+    """All calls in a reply, in order (several actions in one sentence). Twin of parseCalls() in LlmChat.kt."""
+    return [c for c in (parse_call(chunk) for chunk in content.split(END_CALL)) if c]
 
 
 def parse_call(content: str):
-    """Python twin of parseCall() in LlmChat.kt."""
+    """The first call in [content]. Python twin of parseCall() in LlmChat.kt."""
     m = re.search(r"call:([A-Za-z_][A-Za-z0-9_]*)\{(.*)", content, re.S)
     if not m:
         return None
@@ -62,6 +90,11 @@ def text_match(expected, got) -> bool:
     return bool(e) and len(e & g) / len(e) >= 0.6
 
 
+def fuzzy_match(expected, got) -> bool:
+    e, g = re.sub(r"[^a-z0-9]", "", str(expected).lower()), re.sub(r"[^a-z0-9]", "", str(got).lower())
+    return bool(e) and difflib.SequenceMatcher(None, e, g).ratio() >= 0.7
+
+
 def arg_errors(expect: dict, got: dict) -> list[str]:
     errors = []
     for k, v in expect.items():
@@ -74,6 +107,9 @@ def arg_errors(expect: dict, got: dict) -> list[str]:
         elif k in FREE_TEXT:
             if not text_match(v, got[k]):
                 errors.append(f"{k}={got[k]!r} (want {v!r})")
+        elif k in FUZZY:
+            if not fuzzy_match(v, got[k]):
+                errors.append(f"{k}={got[k]!r} (want {v!r})")
         elif norm(got[k]) != norm(v):
             errors.append(f"{k}={got[k]} (want {v})")
     for k, v in got.items():
@@ -85,8 +121,8 @@ def arg_errors(expect: dict, got: dict) -> list[str]:
 def ask(url: str, tools, text: str) -> str:
     body = {
         "messages": [{"role": "developer", "content": SYSTEM}, {"role": "user", "content": text}],
-        "tools": tools, "temperature": 0, "max_tokens": 96, "cache_prompt": True,
-        "stop": ["<end_function_call>"],
+        "tools": tools, "temperature": 0, "max_tokens": 200, "cache_prompt": True,
+        "stop": [STOP, "<end_of_turn>"],
     }
     req = urllib.request.Request(f"{url}/v1/chat/completions", json.dumps(body).encode(), {"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=120) as r:
@@ -95,14 +131,16 @@ def ask(url: str, tools, text: str) -> str:
 
 def score(row: dict, raw: str) -> dict:
     """Score one model reply against a labelled row (shared with the Colab notebook)."""
-    got, want = parse_call(raw), row["expect"]
-    if want is None:
-        fn_ok = got is None
-        errs = [] if fn_ok else [f"called {got['name']} on a non-command"]
+    got, want = parse_calls(raw), row["expect"]
+    wants = [] if want is None else (want if isinstance(want, list) else [want])
+    names = [c["name"] for c in got]
+    if not wants:
+        fn_ok = not got
+        errs = [] if fn_ok else [f"called {'+'.join(names)} on a non-command"]
     else:
-        fn_ok = got is not None and got["name"] == want["name"]
-        errs = (arg_errors(want["args"], got["args"]) if fn_ok
-                else [f"called {got['name'] if got else 'nothing'} (want {want['name']})"])
+        fn_ok = names == [w["name"] for w in wants]
+        errs = ([e for w, g in zip(wants, got) for e in arg_errors(w["args"], g["args"])] if fn_ok
+                else [f"called {'+'.join(names) or 'nothing'} (want {'+'.join(w['name'] for w in wants)})"])
     return {**row, "raw": raw, "got": got, "function_ok": fn_ok, "exact": fn_ok and not errs, "errors": errs}
 
 

@@ -1,0 +1,30 @@
+{"text": "Play Arijit Singh on Spotify", "source": "clean", "expect": {"name": "play_media", "args": {"query": "Arijit Singh", "app": "Spotify"}}}
+{"text": "Open YouTube and play bollywood songs", "source": "clean", "expect": {"name": "play_media", "args": {"query": "bollywood songs", "app": "YouTube"}}}
+{"text": "Play some old Kishore Kumar songs", "source": "clean", "expect": {"name": "play_media", "args": {"query": "old Kishore Kumar songs"}}}
+{"text": "Put on Coldplay in YouTube Music", "source": "clean", "expect": {"name": "play_media", "args": {"query": "Coldplay", "app": "YouTube Music"}}}
+{"text": "Search Google for the weather in Pune", "source": "clean", "expect": {"name": "web_search", "args": {"query": "the weather in Pune"}}}
+{"text": "Look up the train status of Deccan Express", "source": "clean", "expect": {"name": "web_search", "args": {"query": "train status of Deccan Express"}}}
+{"text": "Navigate to the airport", "source": "clean", "expect": {"name": "navigate", "args": {"destination": "the airport"}}}
+{"text": "Take me to Pune railway station", "source": "clean", "expect": {"name": "navigate", "args": {"destination": "Pune railway station"}}}
+{"text": "Open Maps and find petrol pumps", "source": "clean", "expect": {"name": "search_maps", "args": {"query": "petrol pumps"}}}
+{"text": "Show me ATMs near me", "source": "clean", "expect": {"name": "search_maps", "args": {"query": "ATMs"}}}
+{"text": "Open WhatsApp and message Rahul I'm late", "source": "clean", "expect": {"name": "message_app", "args": {"app": "WhatsApp", "contact": "Rahul", "message": "I'm late"}}}
+{"text": "Send a WhatsApp to mom saying I reached", "source": "clean", "expect": {"name": "message_app", "args": {"app": "WhatsApp", "contact": "mom", "message": "I reached"}}}
+{"text": "Open the camera in selfie mode", "source": "clean", "expect": {"name": "camera", "args": {"mode": "selfie"}}}
+{"text": "Record a video", "source": "clean", "expect": {"name": "camera", "args": {"mode": "video"}}}
+{"text": "Search the Play Store for Swiggy", "source": "clean", "expect": {"name": "search_app_store", "args": {"query": "Swiggy"}}}
+{"text": "Install a PDF scanner app", "source": "clean", "expect": {"name": "search_app_store", "args": {"query": "PDF scanner app"}}}
+{"text": "Set an alarm in 2 hours", "source": "clean", "expect": {"name": "set_alarm", "args": {"time": "2 hours"}}}
+{"text": "Remind me to drink water in 30 minutes", "source": "clean", "expect": {"name": "create_reminder", "args": {"text": "drink water", "time": "30 minutes"}}}
+{"text": "Cancel my 7 am alarm", "source": "clean", "expect": {"name": "dismiss_alarm", "args": {"action": "dismiss", "time": "7 am"}}}
+{"text": "Turn on do not disturb and set an alarm for 6", "source": "multi", "expect": [{"name": "set_do_not_disturb", "args": {"state": "on"}}, {"name": "set_alarm", "args": {"time": "6"}}]}
+{"text": "Turn on the flashlight and set a 5 minute timer", "source": "multi", "expect": [{"name": "set_flashlight", "args": {"state": "on"}}, {"name": "set_timer", "args": {"duration": "5 minute"}}]}
+{"text": "Pause the music and call dad", "source": "multi", "expect": [{"name": "media_control", "args": {"action": "pause"}}, {"name": "call_contact", "args": {"contact": "dad"}}]}
+{"text": "Volume up and play Kesariya", "source": "multi", "expect": [{"name": "set_volume", "args": {"action": "up"}}, {"name": "play_media", "args": {"query": "Kesariya"}}]}
+{"text": "Set an alarm for 6 am and remind me to take my medicine at 9", "source": "multi", "expect": [{"name": "set_alarm", "args": {"time": "6 am"}}, {"name": "create_reminder", "args": {"text": "take my medicine", "time": "9"}}]}
+{"text": "Open WhatsApp and turn on the flashlight", "source": "multi", "expect": [{"name": "open_app", "args": {"app": "WhatsApp"}}, {"name": "set_flashlight", "args": {"state": "on"}}]}
+{"text": "Mute the phone, then turn on do not disturb and set a timer for 20 minutes", "source": "multi", "expect": [{"name": "set_volume", "args": {"action": "mute"}}, {"name": "set_do_not_disturb", "args": {"state": "on"}}, {"name": "set_timer", "args": {"duration": "20 minutes"}}]}
+{"text": "What can you do", "source": "none", "expect": null}
+{"text": "Play cricket with me", "source": "none", "expect": null}
+{"text": "I watched a movie on YouTube yesterday", "source": "none", "expect": null}
+{"text": "My friend lives near the airport", "source": "none", "expect": null}

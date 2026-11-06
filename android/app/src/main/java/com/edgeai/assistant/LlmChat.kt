@@ -20,7 +20,8 @@ data class ChatTurn(
     val user: String,
     val fromVoice: Boolean,
     val pending: Boolean = true,
-    val call: FunctionCall? = null,
+    /** In spoken order: one sentence can ask for several actions ("turn on DND and set an alarm for 6"). */
+    val calls: List<FunctionCall> = emptyList(),
     val raw: String = "",
     val error: String? = null,
     val prefillTokens: Int = 0,
@@ -28,7 +29,14 @@ data class ChatTurn(
     val decodeTokens: Int = 0,
     val decodeMillis: Double = 0.0,
     val totalMillis: Long = 0,
-)
+    /** What the executor did and said, once the call has been carried out. */
+    val action: ActionResult? = null,
+    /** Why [CommandGuard] answered or changed the call; null when the model's call ran as is. */
+    val guard: String? = null,
+    val actionMillis: Long = 0,
+) {
+    val call: FunctionCall? get() = calls.firstOrNull()
+}
 
 /** Sends commands to [LlmServer] with the schema from finetune/functions.json and parses the reply. */
 object LlmChat {
@@ -37,8 +45,8 @@ object LlmChat {
     private val _turns = MutableStateFlow<List<ChatTurn>>(emptyList())
     val turns: StateFlow<List<ChatTurn>> = _turns.asStateFlow()
 
-    /** Also run transcribed voice commands through the model (set from the Chat tab). */
-    val routeVoice = MutableStateFlow(true)
+    /** Typed chat commands are only shown by default; this also carries them out (voice commands always are). */
+    val runTypedActions = MutableStateFlow(false)
 
     private var tools: JSONArray? = null
 
@@ -48,8 +56,28 @@ object LlmChat {
         request(context, "Turn on the flashlight")
     }
 
+    fun setAction(id: Long, result: ActionResult) = _turns.update { list -> list.map { if (it.id == id) it.copy(action = result) else it } }
+
+    fun setGuard(id: Long, why: String?) = _turns.update { list -> list.map { if (it.id == id) it.copy(guard = why) else it } }
+
+    /** A turn [CommandGuard] answered without asking the model. */
+    fun record(text: String, fromVoice: Boolean, why: String): ChatTurn {
+        val turn = ChatTurn(SystemClock.elapsedRealtimeNanos(), text, fromVoice, pending = false, guard = why)
+        _turns.update { it + turn }
+        return turn
+    }
+
+    /** Allowed argument values from functions.json, for [CommandGuard.afterModel]. */
+    fun enums(context: Context): Map<String, Map<String, Set<String>>> =
+        enums ?: CommandGuard.enumsFrom(tools(context)).also { enums = it }
+
+    private var enums: Map<String, Map<String, Set<String>>>? = null
+
+    private fun tools(context: Context): JSONArray =
+        tools ?: JSONArray(context.assets.open("functions.json").bufferedReader().readText()).also { tools = it }
+
     /** Blocking; call off the main thread. */
-    fun send(context: Context, text: String, fromVoice: Boolean = false) {
+    fun send(context: Context, text: String, fromVoice: Boolean = false): ChatTurn {
         val id = SystemClock.elapsedRealtimeNanos()
         _turns.update { it + ChatTurn(id, text, fromVoice) }
         val started = SystemClock.elapsedRealtime()
@@ -59,7 +87,7 @@ object LlmChat {
             val timings = out.optJSONObject("timings") ?: JSONObject()
             ChatTurn(
                 id, text, fromVoice, pending = false,
-                call = parseCall(content),
+                calls = parseCalls(content),
                 raw = content,
                 prefillTokens = timings.optInt("prompt_n"),
                 prefillMillis = timings.optDouble("prompt_ms"),
@@ -71,36 +99,43 @@ object LlmChat {
             ChatTurn(id, text, fromVoice, pending = false, error = e.message ?: e.toString())
         }
         _turns.update { list -> list.map { if (it.id == id) result else it } }
-        log(context, result)
+        return result
     }
 
     /** One JSON line per turn in files/llm/chat_log.jsonl (and logcat), for finetune/ analysis. */
-    private fun log(context: Context, t: ChatTurn) {
+    fun log(context: Context, t: ChatTurn) {
         val line = JSONObject()
             .put("time", System.currentTimeMillis())
             .put("text", t.user)
             .put("source", if (t.fromVoice) "voice" else "typed")
             .put("raw", t.raw)
             .put("call", t.call?.let { c -> JSONObject().put("name", c.name).put("args", JSONObject(c.args.toMap())) } ?: JSONObject.NULL)
+            .put("calls", JSONArray(t.calls.map { c -> JSONObject().put("name", c.name).put("args", JSONObject(c.args.toMap())) }))
             .put("error", t.error ?: JSONObject.NULL)
+            .put("action_ok", t.action?.ok ?: JSONObject.NULL)
+            .put("reply", t.action?.say ?: JSONObject.NULL)
+            .put("guard", t.guard ?: JSONObject.NULL)
+            .put("prompt_n", t.prefillTokens).put("predicted_n", t.decodeTokens)
             .put("prefill_ms", t.prefillMillis).put("decode_ms", t.decodeMillis).put("total_ms", t.totalMillis)
+            .put("action_ms", t.actionMillis)
             .toString()
         Log.i("EdgeChat", line)
-        runCatching { File(LlmServer.modelDir(context), "chat_log.jsonl").appendText(line + "\n") }
+        runCatching { AppLogs.chatLog(context).appendText(line + "\n") }
     }
 
     private fun request(context: Context, text: String): JSONObject {
-        val tools = tools ?: JSONArray(context.assets.open("functions.json").bufferedReader().readText()).also { tools = it }
+        val tools = tools(context)
         val body = JSONObject()
             .put("messages", JSONArray()
                 .put(JSONObject().put("role", "developer").put("content", SYSTEM))
                 .put(JSONObject().put("role", "user").put("content", text)))
             .put("tools", tools)
             .put("temperature", 0)
-            .put("max_tokens", 96)
+            .put("max_tokens", 200)
             .put("cache_prompt", true)
-            // FunctionGemma keeps generating ("<start_function_response>...") after the call.
-            .put("stop", JSONArray().put("<end_function_call>"))
+            // After its last call FunctionGemma writes <start_function_response> and would go on to invent the
+            // result; stopping there (not at the first <end_function_call>) keeps every call of a multi-action command.
+            .put("stop", JSONArray().put("<start_function_response>").put("<end_of_turn>"))
         val conn = URL("http://127.0.0.1:${LlmServer.PORT}/v1/chat/completions").openConnection() as HttpURLConnection
         conn.requestMethod = "POST"
         conn.doOutput = true
@@ -117,6 +152,9 @@ object LlmChat {
 
 private val CALL = Regex("""call:([A-Za-z_][A-Za-z0-9_]*)\{(.*)\}?""", RegexOption.DOT_MATCHES_ALL)
 private const val ESC = "<escape>"
+
+/** Every call in a reply, in order. Twin of parse_calls() in finetune/evaluate.py. */
+internal fun parseCalls(content: String): List<FunctionCall> = content.split("<end_function_call>").mapNotNull(::parseCall)
 
 /** Parses FunctionGemma output like `<start_function_call>call:set_alarm{hour:6,day:<escape>today<escape>}`. */
 internal fun parseCall(content: String): FunctionCall? {

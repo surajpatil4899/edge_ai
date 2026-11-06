@@ -24,6 +24,11 @@ class WakeWordModel(assets: AssetManager) : AutoCloseable {
     private val patience = head.patience
     private val gate = Math.pow(10.0, head.gateDbfs / 20.0).toFloat()
     private var aboveThreshold = 0
+    private var runPeak = 0f
+
+    /** Highest score during the steps that made the last detection, for the logs. */
+    var lastDetectionScore = 0f
+        private set
     private val stepPeaks = ArrayDeque<Float>()
 
     private val audio = FloatArray(STEP + CONTEXT) // last step plus context, int16-scaled
@@ -48,9 +53,16 @@ class WakeWordModel(assets: AssetManager) : AutoCloseable {
             stepPeaks.addLast(peak)
             while (stepPeaks.size > head.window) stepPeaks.removeFirst()
             val loud = stepPeaks.maxOrNull()!! > gate
-            aboveThreshold = if (step() > head.threshold && loud) aboveThreshold + 1 else 0
+            val score = step()
+            if (score > head.threshold && loud) {
+                runPeak = if (aboveThreshold == 0) score else maxOf(runPeak, score)
+                aboveThreshold++
+            } else {
+                aboveThreshold = 0
+            }
             if (aboveThreshold >= patience) {
                 aboveThreshold = 0
+                lastDetectionScore = runPeak
                 detected = true
             }
         }

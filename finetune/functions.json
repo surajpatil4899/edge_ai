@@ -9,7 +9,7 @@
         "properties": {
           "time": {
             "type": "string",
-            "description": "The time exactly as spoken, e.g. '6 am', '5:45 pm', 'seven thirty', '8:30 tonight'."
+            "description": "The time exactly as spoken, e.g. '6 am', '5:45 pm', 'seven thirty', '8:30 tonight', or a delay like '6 hours'."
           },
           "day": {
             "type": "string",
@@ -70,7 +70,7 @@
           },
           "time": {
             "type": "string",
-            "description": "The time exactly as spoken, if given."
+            "description": "The time exactly as spoken, or a delay like '20 minutes', if given."
           },
           "day": {
             "type": "string",
@@ -117,7 +117,7 @@
     "type": "function",
     "function": {
       "name": "send_message",
-      "description": "Send a text message to a contact.",
+      "description": "Send an SMS text message to a contact (not WhatsApp or other chat apps).",
       "parameters": {
         "type": "object",
         "properties": {
@@ -210,7 +210,7 @@
     "type": "function",
     "function": {
       "name": "media_control",
-      "description": "Control music or video playback.",
+      "description": "Pause, resume, skip or stop what is already playing. To play something specific, use play_media.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -235,7 +235,7 @@
     "type": "function",
     "function": {
       "name": "open_app",
-      "description": "Open an app by name.",
+      "description": "Open an app by name, without doing anything inside it.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -264,10 +264,164 @@
               "dismiss",
               "snooze"
             ]
+          },
+          "time": {
+            "type": "string",
+            "description": "The alarm's time exactly as spoken, only if the user names one, e.g. '6 am'."
           }
         },
         "required": [
           "action"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "play_media",
+      "description": "Play or search for a song, artist, video or playlist, optionally in a named app.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "What to play, as spoken, e.g. 'Arijit Singh', 'bollywood songs'."
+          },
+          "app": {
+            "type": "string",
+            "description": "The app, only if the user names one, e.g. 'YouTube', 'Spotify', 'YouTube Music'."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "web_search",
+      "description": "Search the web.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "What to search for, as spoken."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "navigate",
+      "description": "Start turn-by-turn navigation to a place in the maps app.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "string",
+            "description": "The place as spoken, e.g. 'the airport', 'Pune station'."
+          }
+        },
+        "required": [
+          "destination"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "search_maps",
+      "description": "Find places on the map, e.g. nearby petrol pumps or restaurants.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "What to find, as spoken, e.g. 'petrol pumps'."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "message_app",
+      "description": "Write a message to a contact in a chat app such as WhatsApp or Telegram.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string",
+            "description": "The chat app as spoken, e.g. 'WhatsApp'."
+          },
+          "contact": {
+            "type": "string",
+            "description": "Contact name as spoken."
+          },
+          "message": {
+            "type": "string",
+            "description": "The message text, if said."
+          }
+        },
+        "required": [
+          "app",
+          "contact"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "camera",
+      "description": "Open the camera in a mode.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "photo",
+              "selfie",
+              "video"
+            ]
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "search_app_store",
+      "description": "Search the Play Store for an app to install.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The app or kind of app, as spoken, e.g. 'Swiggy', 'a PDF scanner'."
+          }
+        },
+        "required": [
+          "query"
         ]
       }
     }

@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 import kotlin.math.sqrt
 
+enum class Perm { CALLS, CONTACTS, OVERLAY, EXACT_ALARMS, DND, BATTERY }
+
 enum class Status { Stopped, Loading, WaitingForWake, Listening, Transcribing, Error }
 
 sealed interface LogEntry {
@@ -35,6 +37,15 @@ object AssistantState {
 
     /** Debug builds: save everything heard to a wav on the device, for offline tuning. */
     val recordSession = MutableStateFlow(false)
+
+    /** Summary of an abnormal end of the previous run (crash, low-memory kill...), shown once as a banner. */
+    val lastExit = MutableStateFlow<String?>(null)
+
+    /** Whether the app's screen is showing: Android only lets visible apps open other apps' screens. */
+    val appVisible = MutableStateFlow(false)
+
+    /** Status of the permissions actions need, refreshed whenever the app comes to the front. */
+    val permissions = MutableStateFlow<Map<Perm, Boolean>>(emptyMap())
 
     /** True while an enrollment sample is being recorded (mic is busy). */
     val enrolling = MutableStateFlow(false)
@@ -67,6 +78,13 @@ object AssistantState {
     }
 
     fun add(entry: LogEntry) {
+        AppLogs.activity(
+            when (entry) {
+                is LogEntry.Wake -> "wake: ${entry.keyword}"
+                is LogEntry.Command -> "command: \"${entry.text}\" (%.1f s audio, ASR %d ms)".format(entry.audioSeconds, entry.asrMillis)
+                is LogEntry.Info -> entry.message
+            },
+        )
         _log.update { (listOf(entry) + it).take(100) }
     }
 

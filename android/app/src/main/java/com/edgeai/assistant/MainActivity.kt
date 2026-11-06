@@ -2,6 +2,8 @@ package com.edgeai.assistant
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Bundle
@@ -57,12 +59,19 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+private val ACTION_PERMISSIONS = arrayOf(Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS)
+
 class MainActivity : ComponentActivity() {
 
     private val requestPermissions = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { granted ->
-        if (granted[Manifest.permission.RECORD_AUDIO] == true) {
+        refreshPermissions()
+        val wantedStart = startAfterGrant
+        startAfterGrant = false
+        if (!wantedStart) {
+            // Permissions asked from the Setup tab or for enrollment: nothing to start.
+        } else if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             ContextCompat.startForegroundService(this, Intent(this, ListenerService::class.java))
         } else {
             Toast.makeText(this, "Microphone permission is needed to listen", Toast.LENGTH_LONG).show()
@@ -72,18 +81,31 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        AppLogs.init(this)
         val debuggable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
         setContent {
             MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
                 MainScreen(
-                    voice = {
-                        VoiceTab(showBridgeSwitch = debuggable, onStart = ::start, onStop = ::stop, onEnroll = ::enroll, onNotWake = ::enrollNotWake)
-                    },
+                    voice = { VoiceTab(onStart = ::start, onStop = ::stop) },
                     chat = {
                         ChatTab(
                             onLoadModel = { LlmServer.start(this) },
                             onUnloadModel = { LlmServer.stop() },
-                            onSend = { text -> lifecycleScope.launch(Dispatchers.IO) { LlmChat.send(this@MainActivity, text) } },
+                            onSend = { text ->
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    CommandRunner.run(this@MainActivity, text, fromVoice = false, execute = LlmChat.runTypedActions.value)
+                                }
+                            },
+                        )
+                    },
+                    setup = {
+                        SetupTab(
+                            showDebug = debuggable,
+                            onGrantRuntime = { requestPermissions.launch(ACTION_PERMISSIONS) },
+                            onOpenSettings = { action -> openSettings(action) },
+                            onEnroll = ::enroll,
+                            onNotWake = ::enrollNotWake,
+                            onShareLogs = { AppLogs.share(this) },
                         )
                     },
                 )
@@ -91,12 +113,46 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var startAfterGrant = false
+
     private fun start() {
+        startAfterGrant = true
         val permissions = buildList {
             add(Manifest.permission.RECORD_AUDIO)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) add(Manifest.permission.POST_NOTIFICATIONS)
+            addAll(ACTION_PERMISSIONS)
         }
         requestPermissions.launch(permissions.toTypedArray())
+    }
+
+    private fun openSettings(action: String) {
+        val intent = Intent(action)
+        if (action != Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS) intent.data = Uri.parse("package:$packageName")
+        runCatching { startActivity(intent) }.onFailure { startActivity(Intent(action)) }
+    }
+
+    private fun refreshPermissions() {
+        val nm = getSystemService(android.app.NotificationManager::class.java)
+        val am = getSystemService(android.app.AlarmManager::class.java)
+        val granted = { p: String -> checkSelfPermission(p) == android.content.pm.PackageManager.PERMISSION_GRANTED }
+        AssistantState.permissions.value = mapOf(
+            Perm.CALLS to granted(Manifest.permission.CALL_PHONE),
+            Perm.CONTACTS to granted(Manifest.permission.READ_CONTACTS),
+            Perm.OVERLAY to Settings.canDrawOverlays(this),
+            Perm.EXACT_ALARMS to (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || am.canScheduleExactAlarms()),
+            Perm.DND to nm.isNotificationPolicyAccessGranted,
+            Perm.BATTERY to getSystemService(android.os.PowerManager::class.java).isIgnoringBatteryOptimizations(packageName),
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        AssistantState.appVisible.value = true
+    }
+
+    override fun onStop() {
+        AssistantState.appVisible.value = false
+        super.onStop()
     }
 
     private fun enroll() {
@@ -119,6 +175,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         AssistantState.enrollCount.value = Enrollment.count(this)
         AssistantState.notWakeCount.value = Enrollment.notWakeCount(this)
+        refreshPermissions()
     }
 
     private fun stop() {
@@ -132,7 +189,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MainScreen(voice: @Composable () -> Unit, chat: @Composable () -> Unit) {
+private fun MainScreen(voice: @Composable () -> Unit, chat: @Composable () -> Unit, setup: @Composable () -> Unit) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     Scaffold { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
@@ -145,86 +202,45 @@ private fun MainScreen(voice: @Composable () -> Unit, chat: @Composable () -> Un
             PrimaryTabRow(selectedTabIndex = tab) {
                 Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Voice") })
                 Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Chat") })
+                Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text("Setup") })
             }
-            if (tab == 0) voice() else chat()
+            when (tab) {
+                0 -> voice()
+                1 -> chat()
+                else -> setup()
+            }
         }
     }
 }
 
 @Composable
-private fun VoiceTab(
-    showBridgeSwitch: Boolean,
-    onStart: () -> Unit,
-    onStop: () -> Unit,
-    onEnroll: () -> Unit,
-    onNotWake: () -> Unit,
-) {
+private fun VoiceTab(onStart: () -> Unit, onStop: () -> Unit) {
     val status by AssistantState.status.collectAsStateWithLifecycle()
     val log by AssistantState.log.collectAsStateWithLifecycle()
     val level by AssistantState.level.collectAsStateWithLifecycle()
-    val useBridge by AssistantState.useBridge.collectAsStateWithLifecycle()
-    val recordSession by AssistantState.recordSession.collectAsStateWithLifecycle()
-    val enrolling by AssistantState.enrolling.collectAsStateWithLifecycle()
-    val enrollCount by AssistantState.enrollCount.collectAsStateWithLifecycle()
-    val notWakeCount by AssistantState.notWakeCount.collectAsStateWithLifecycle()
     val active = status != Status.Stopped && status != Status.Error
 
+    val lastExit by AssistantState.lastExit.collectAsStateWithLifecycle()
     run {
         Column(
             Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            lastExit?.let { reason ->
+                Card(Modifier.fillMaxWidth(), colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("Edge Assistant stopped unexpectedly last time ($reason).", style = MaterialTheme.typography.bodyMedium)
+                        Text("Setup tab → Share logs to send the details.", style = MaterialTheme.typography.bodySmall)
+                        androidx.compose.material3.TextButton(onClick = { AssistantState.lastExit.value = null }) { Text("Dismiss") }
+                    }
+                }
+            }
             StatusCard(status)
             LinearProgressIndicator(
                 progress = { if (active) level else 0f },
                 modifier = Modifier.fillMaxWidth().height(8.dp),
                 drawStopIndicator = {},
             )
-            if (showBridgeSwitch) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Use laptop mic (adb bridge)", style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            "Debug only. Run prototype/mic_bridge.py. Applies on next Start.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Switch(checked = useBridge, onCheckedChange = { AssistantState.useBridge.value = it }, enabled = !active)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Save session audio", style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            "Debug only. Records what the app hears, for tuning. Applies on next Start.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Switch(checked = recordSession, onCheckedChange = { AssistantState.recordSession.value = it }, enabled = !active)
-                }
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Wake word samples: $enrollCount / ${Enrollment.TARGET}", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            if (active) "Stop listening first." else "Tap, wait for the beep, say \"Okay Edge\". ${Enrollment.hint(enrollCount)}.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Button(onClick = onEnroll, enabled = !active && !enrolling) {
-                            Text(if (enrolling) "Recording…" else "Record \"Okay Edge\" sample")
-                        }
-                        Text(
-                            "NOT-wake samples: $notWakeCount / 15. Next, say: \"${Enrollment.notWakePrompt(notWakeCount)}\"",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        OutlinedButton(onClick = onNotWake, enabled = !active && !enrolling) {
-                            Text("Record NOT-wake sample")
-                        }
-                    }
-                }
-            }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (active) OutlinedButton(onClick = onStop) { Text("Stop") } else Button(onClick = onStart) { Text("Start listening") }
                 OutlinedButton(

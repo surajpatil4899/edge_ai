@@ -41,8 +41,12 @@ class ListenerService : Service() {
     }
 
     private fun runPipeline() {
+        AppLogs.init(this)
         val session = AssistantState.newSession()
         AssistantState.setStatus(Status.Loading)
+        // Warm up the command model and the voice while the speech models load, so the first command is quick.
+        LlmServer.start(this)
+        Speaker.init(this)
         val tone = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 80)
         var input: AudioInput? = null
         var pipeline: VoicePipeline? = null
@@ -125,13 +129,12 @@ class ListenerService : Service() {
             is PipelineEvent.Command -> {
                 Log.i(TAG, "command: \"${event.text}\" heard \"${event.heard}\" (${event.audioSeconds}s audio, ASR ${event.asrMillis} ms)")
                 AssistantState.add(LogEntry.Command(now, event.text, event.audioSeconds, event.asrMillis))
-                if (LlmChat.routeVoice.value && LlmServer.state.value is LlmServer.State.Ready) {
-                    thread(name = "llm-voice") { LlmChat.send(this, event.text, fromVoice = true) }
-                }
+                thread(name = "command") { CommandRunner.run(this, event.text, fromVoice = true, execute = true) }
                 AssistantState.setStatus(Status.WaitingForWake)
             }
             is PipelineEvent.Ignored -> {
                 Log.i(TAG, "ignored: \"${event.heard}\"")
+                AppLogs.activity("ignored (no command in it): \"${event.heard}\"")
                 AssistantState.setStatus(Status.Listening)
             }
             PipelineEvent.Timeout -> {

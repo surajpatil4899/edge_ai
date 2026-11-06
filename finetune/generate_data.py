@@ -1,14 +1,15 @@
-"""Generate the command -> function-call training set (schema v2, finetune/functions.json).
+"""Generate the command -> function-call training set (schema v3, finetune/functions.json).
 
-  generate_data.py [--n 4000] [--noise 0.4] [--seed 0]  -> data/train.jsonl, data/val.jsonl
+  generate_data.py [--n 9000] [--noise 0.4] [--seed 0]  -> data/train.jsonl, data/val.jsonl
 
 Each example is {"messages": [developer, user, assistant], "meta": {...}}; with tools from
 functions.json it is what `tokenizer.apply_chat_template(messages, tools=tools)` expects for FunctionGemma. The assistant turn
-is a tool call, or a short reply (no call) for non-commands.
+is one or more tool calls (several actions in one sentence), or a short reply (no call) for non-commands.
+"Open X and do Y" inside an app becomes the one call that opens the app at that spot (play_media, navigate, ...).
 
 Slot values are rendered the many ways people say them and Moonshine writes them; transcription
 noise is applied to the template words only, so the labels (copied spans) stay exact.
-Examples whose text appears in data/eval_seed.jsonl are dropped.
+Examples whose text appears in a held-out set (data/eval_*.jsonl) are dropped.
 """
 
 import argparse
@@ -17,7 +18,8 @@ import os
 import random
 import re
 
-from spoken import parse_duration, parse_time
+from evaluate import parse_when
+from spoken import parse_duration
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SYSTEM = "You are a model that can do function calling with the following functions"
@@ -51,6 +53,18 @@ def spoken_time():
     if mer and R.random() < 0.15 and mer in ("am", "pm") and base[-1].isdigit():
         return base + mer  # "6am" (digits only: "thirtypm" would not parse)
     return f"{base} {mer}".strip()
+
+
+def spoken_delay():
+    """A delay for an alarm or reminder ("6 hours", "twenty minutes", "an hour and a half"); no seconds."""
+    kind = R.random()
+    if kind < 0.45:
+        n = R.choice([1, 2, 3, 4, 5, 6, 7, 8, 2, 6])
+        return f"{R.choice([str(n), NUM_WORDS[n]])} {'hour' if n == 1 else R.choice(['hours', 'hours', 'hrs'])}"
+    if kind < 0.8:
+        n = R.choice([5, 10, 15, 20, 30, 40, 45, 90])
+        return f"{R.choice([str(n), NUM_WORDS[n]]) if n <= 12 else n} {R.choice(['minutes', 'minutes', 'mins'])}"
+    return R.choice(["half an hour", "an hour", "an hour and a half", "two and a half hours", "1 hour 30 minutes"])
 
 
 def spoken_duration():
@@ -93,10 +107,35 @@ EVENTS = ["a doctor's appointment", "doctors appointment", "a dentist appointmen
           "a party", "a presentation", "a train to catch", "a client call", "my driving test", "a yoga class", "a wedding",
           "an eye checkup", "the gym", "my sister's birthday party", "a bank appointment", "a video call with mom", "an online class"]
 LABELS = ["medicine", "gym", "work", "the meeting", "yoga", "school", "my flight", "prayer", "the train", "office"]
-APPS = ["WhatsApp", "YouTube", "camera", "Instagram", "Gmail", "Google Maps", "maps", "Spotify", "settings", "calculator",
+APPS = ["WhatsApp", "YouTube", "Instagram", "Gmail", "Google Maps", "maps", "Spotify", "settings", "calculator",
         "Paytm", "PhonePe", "Google Pay", "the gallery", "photos", "Chrome", "the browser", "Facebook", "Twitter", "Netflix",
         "Amazon", "Flipkart", "Swiggy", "Zomato", "Uber", "Ola", "the clock", "calendar", "contacts", "the dialer", "messages",
-        "Telegram", "LinkedIn", "Snapchat", "the music app", "files", "notes", "Hotstar", "Gaana", "the weather app"]
+        "Telegram", "LinkedIn", "Snapchat", "the music app", "files", "notes", "Hotstar", "Gaana", "the weather app",
+        "what's up", "whats app", "you tube", "insta", "G pay", "play store", "the play store"]
+MEDIA = ["Arijit Singh", "bollywood songs", "lofi music", "Shape of You", "Kesariya", "old Hindi songs", "Believer",
+         "workout music", "Diljit Dosanjh", "AP Dhillon", "funny cat videos", "cricket highlights", "Taylor Swift",
+         "relaxing music", "Ed Sheeran", "Kishore Kumar songs", "Marathi songs", "devotional songs", "Hanuman Chalisa",
+         "Tum Hi Ho", "Coldplay", "how to make pasta", "Python tutorial", "rain sounds", "90s hits", "Punjabi songs",
+         "Lata Mangeshkar", "Despacito", "IPL highlights", "Naatu Naatu", "a bollywood song", "romantic songs",
+         "the news", "Sid Sriram", "Alan Walker", "Shreya Ghoshal", "kids songs", "Ganpati songs", "party songs", "jazz"]
+MEDIA_APPS = ["YouTube", "YouTube", "YouTube", "youtube", "you tube", "Spotify", "Spotify", "spotify", "YouTube Music",
+              "YT Music", "JioSaavn", "Gaana", "Wynk", "Amazon Music"]
+QUERIES = ["the weather in Pune", "weather today", "cricket score", "how tall is Mount Everest", "petrol price today",
+           "IPL schedule", "news today", "meaning of serendipity", "how to make tea", "Deccan Queen train status",
+           "Virat Kohli", "gold rate today", "who won the match yesterday", "Diwali date", "dollar to rupee rate",
+           "Python list comprehension", "symptoms of dengue", "time in London", "best phones under 20000",
+           "how to reset my router", "Pune to Mumbai distance", "recipe for paneer butter masala", "holidays in December"]
+PLACES = ["the airport", "Pune station", "home", "office", "Shivaji Nagar", "the nearest hospital", "Phoenix Mall",
+          "Hinjewadi", "Mumbai", "the railway station", "Koregaon Park", "my office", "Lonavala", "the bus stand",
+          "Swargate", "Dagdusheth temple", "the Gateway of India", "Bangalore airport", "Andheri station", "Baner",
+          "Rahul's house", "the hospital", "college", "the stadium"]
+NEARBY = ["petrol pumps", "a petrol pump", "restaurants", "ATMs", "an ATM", "hospitals", "coffee shops", "medical stores",
+          "a pharmacy", "hotels", "parking", "EV charging stations", "chinese restaurants", "gyms", "bus stops",
+          "pizza places", "a mechanic", "grocery stores"]
+CHAT_APPS = ["WhatsApp", "WhatsApp", "WhatsApp", "whatsapp", "what's app", "Telegram", "Signal"]
+STORE_APPS = ["Swiggy", "Zomato", "a PDF scanner", "PhonePe", "Instagram", "a calculator app", "Candy Crush", "Ola",
+              "Truecaller", "a VPN", "Duolingo", "a photo editor", "Free Fire", "Hotstar", "WhatsApp Business",
+              "a QR code scanner", "Uber", "Google Pay", "a music player", "Netflix"]
 
 # ---------------------------------------------------------------- templates per function
 # {time} {day} {label} {duration} {task} {contact} {message} {app} are slots; others are literals.
@@ -107,6 +146,9 @@ TEMPLATES = {
         "set an alarm for {time} {day}", "set an alarm for {day} at {time}", "wake me up {day} at {time}",
         "set an alarm for {time} for {label}", "alarm for {label} at {time}", "set a {label} alarm for {time}",
         "I need to wake up at {time}", "put an alarm for {time}", "create an alarm for {time} {day}",
+        # delays: the time is copied as the delay ("6 hours"); the app adds it to now
+        "set an alarm after {delay}", "set an alarm in {delay}", "wake me up in {delay}", "wake me up after {delay}",
+        "alarm after {delay}", "set alarm for {delay} from now", "ring an alarm in {delay}", "set alarm after {delay}",
     ],
     "set_timer": [
         "set a timer for {duration}", "start a timer for {duration}", "timer for {duration}", "set timer {duration}",
@@ -122,6 +164,8 @@ TEMPLATES = {
         "remind me I have {event} at {time}", "remind me about {event} {day}", "remind me about {event} at {time}",
         "I have {event} {day} at {time} remind me", "remind me that I have {event} at {time} {day}",
         "remind me that there is {event} {day}",
+        "remind me to {task} in {delay}", "remind me in {delay} to {task}", "remind me after {delay} to {task}",
+        "in {delay} remind me to {task}",
     ],
     "call_contact": [
         "call {contact}", "phone {contact}", "give {contact} a call", "dial {contact}", "ring {contact}", "make a call to {contact}",
@@ -132,6 +176,43 @@ TEMPLATES = {
         "tell {contact} that {message}", "send {contact} a text saying {message}", "send a text to {contact} {message}",
         "send message to {contact} {message}", "text {contact} {message}", "write to {contact} saying {message}",
         "send an SMS to {contact} saying {message}",
+    ],
+    "play_media": [
+        "play {query} on {mapp}", "play {query} in {mapp}", "open {mapp} and play {query}", "open {mapp} and search for {query}",
+        "search {query} on {mapp}", "put on {query} on {mapp}", "{mapp} play {query}", "can you play {query} on {mapp}",
+        "I want to listen to {query} on {mapp}", "watch {query} on {mapp}", "open {mapp} and play some {query}",
+        "play {query}", "play some {query}", "I want to listen to {query}", "put on {query}", "can you play {query}",
+        "play me {query}", "start playing {query}",
+    ],
+    "web_search": [
+        "search for {q}", "google {q}", "search google for {q}", "look up {q}", "search the web for {q}",
+        "open chrome and search for {q}", "open google and search {q}", "find {q} on google", "can you search {q}",
+        "search {q}", "do a google search for {q}", "search online for {q}",
+    ],
+    "navigate": [
+        "navigate to {dest}", "take me to {dest}", "directions to {dest}", "how do I get to {dest}", "start navigation to {dest}",
+        "open maps and navigate to {dest}", "show me the way to {dest}", "get directions to {dest}", "drive to {dest}",
+        "open google maps and take me to {dest}", "route to {dest}", "navigate me to {dest}",
+    ],
+    "search_maps": [
+        "find {near} near me", "show {near} nearby", "open maps and find {near}", "search maps for {near}",
+        "show me {near} on the map", "find {near} on google maps", "{near} near me", "look for {near} nearby",
+        "open google maps and search {near}", "are there any {near} nearby",
+    ],
+    "message_app": [
+        "open {capp} and message {contact} {message}", "send a {capp} message to {contact} saying {message}",
+        "{capp} {contact} {message}", "message {contact} on {capp} that {message}", "send {contact} a {capp} saying {message}",
+        "text {contact} on {capp} {message}", "on {capp} tell {contact} that {message}", "open {capp} and send {contact} {message}",
+        "send {message} to {contact} on {capp}", "open {capp} chat with {contact}", "open {capp} and message {contact}",
+    ],
+    "search_app_store": [
+        "search the play store for {store}", "find {store} on the play store", "open play store and search {store}",
+        "download {store}", "install {store}", "look for {store} in the play store", "get {store} from the play store",
+        "open the play store and find {store}", "search {store} in play store",
+    ],
+    "dismiss_alarm_at": [
+        "stop the {time} alarm", "cancel my {time} alarm", "turn off the alarm for {time}", "delete the {time} alarm",
+        "stop the alarm of {time}", "cancel the alarm at {time}", "remove my alarm for {time}", "switch off the {time} alarm",
     ],
 }
 FIXED = {  # (phrase, args)
@@ -157,6 +238,12 @@ FIXED = {  # (phrase, args)
     "dismiss_alarm": [(p, {"action": "dismiss"}) for p in ["stop the alarm", "turn off the alarm", "dismiss the alarm", "cancel the alarm",
                        "alarm off", "shut the alarm"]]
                      + [(p, {"action": "snooze"}) for p in ["snooze", "snooze the alarm", "snooze for a bit", "five more minutes"]],
+    "camera": [(p, {"mode": "photo"}) for p in ["open the camera", "open camera", "take a photo", "take a picture", "click a photo",
+               "open the camera in photo mode", "launch camera", "start the camera", "click a picture"]]
+              + [(p, {"mode": "selfie"}) for p in ["take a selfie", "open the front camera", "open the camera in selfie mode",
+                 "selfie mode", "switch to the selfie camera", "click a selfie", "open selfie camera"]]
+              + [(p, {"mode": "video"}) for p in ["record a video", "open the camera in video mode", "start recording a video",
+                 "video mode", "shoot a video", "open the video camera", "take a video"]],
 }
 OPEN_APP = ["open {app}", "launch {app}", "start {app}", "open the {app} app", "can you open {app}", "go to {app}", "show me {app}"]
 
@@ -180,7 +267,15 @@ NON_COMMANDS = [
     "it's", "is", "and", "the", "uh", "it", "a", "it's okay", "is it", "the edge", "hey", "okay edge",
     "what time is it", "where is my phone", "how old are you", "sing a song", "I love you", "nothing", "never mind",
     "cancel", "wait", "sorry", "what did you say", "can you hear me", "repeat that", "let me think",
+    # capability questions: the app answers these itself; the model must not act on them
+    "what are the tasks you can do", "what all can you do", "tell me what you can do", "what are your features",
+    "how can you help me", "what commands do you know", "give me examples of what you can do", "what can I ask you",
+    "what do you do", "what are the things you can do locally", "help", "what are the tasks you can",
+    # fragments and background speech (field logs)
+    "the internet is not a phone app but it is a big deal", "that's not plastic", "do it work", "what is this",
+    "if you don't have a car you can't do it", "push it", "conde", "corned head", "ah", "yeah yeah",
 ]
+DIGITS = ["100000000000000000", "1 2 3 4", "2026", "45", "9 9 9", "0000000000"]
 
 # ---------------------------------------------------------------- transcription noise
 WAKE_RESIDUE = ["Is ", "It's ", "Okay edge ", "Okay, ", "A. ", "He ", "Edge, ", "And ", "Okay edge, ", "Ok ", "Is, ",
@@ -295,7 +390,33 @@ def build(name: str, noise: bool):
             elif slot == "message":
                 v = R.choice(MESSAGES)
                 fills["message"], args["message"] = v, v
+            elif slot == "delay":
+                v = spoken_delay()
+                fills["delay"], args["time"] = v, v
+            elif slot == "query":
+                v = R.choice(MEDIA)
+                fills["query"], args["query"] = v, v
+            elif slot == "mapp":
+                v = R.choice(MEDIA_APPS)
+                fills["mapp"], args["app"] = v, v
+            elif slot == "q":
+                v = R.choice(QUERIES)
+                fills["q"], args["query"] = v, v
+            elif slot == "dest":
+                v = R.choice(PLACES)
+                fills["dest"], args["destination"] = v, v
+            elif slot == "near":
+                v = R.choice(NEARBY)
+                fills["near"], args["query"] = v, re.sub(r"^(a|an) ", "", v)
+            elif slot == "capp":
+                v = R.choice(CHAT_APPS)
+                fills["capp"], args["app"] = v, v
+            elif slot == "store":
+                v = R.choice(STORE_APPS)
+                fills["store"], args["query"] = v, v
         text = tpl.format(**fills)
+        if name == "dismiss_alarm_at":
+            name, args = "dismiss_alarm", {"action": "dismiss", **args}
         # "tonight" sets the meridiem: keep it with the copied time so "8:30" stays 20:30.
         if args.get("day") == "today" and "tonight" in text and "time" in args and "tonight" not in args["time"]:
             args["time"] += " tonight"
@@ -312,39 +433,64 @@ def build(name: str, noise: bool):
     return (noisy(phrase) if noise else phrase), {"name": name, "arguments": dict(args)}
 
 
-def example(text: str, call, meta):
+def example(text: str, calls: list, meta):
     msgs = [{"role": "developer", "content": SYSTEM}, {"role": "user", "content": text}]
-    if call:
-        msgs.append({"role": "assistant", "tool_calls": [{"type": "function", "function": call}]})
+    if calls:
+        msgs.append({"role": "assistant", "tool_calls": [{"type": "function", "function": c} for c in calls]})
     else:
         msgs.append({"role": "assistant", "content": NO_CALL_REPLY})
     return {"messages": msgs, "meta": meta}
 
 
-WEIGHTS = {"set_alarm": 14, "create_reminder": 14, "set_timer": 10, "call_contact": 10, "send_message": 12, "set_flashlight": 5,
-           "set_volume": 6, "set_do_not_disturb": 4, "media_control": 6, "open_app": 7, "dismiss_alarm": 4}
+WEIGHTS = {"set_alarm": 14, "create_reminder": 14, "set_timer": 9, "call_contact": 10, "send_message": 10, "set_flashlight": 4,
+           "set_volume": 5, "set_do_not_disturb": 4, "media_control": 6, "open_app": 6, "dismiss_alarm": 3,
+           "dismiss_alarm_at": 3, "play_media": 10, "web_search": 6, "navigate": 6, "search_maps": 5, "message_app": 8,
+           "camera": 4, "search_app_store": 4}
+# Several actions in one sentence; joined parts keep their own wording ("turn on DND and set an alarm for 6").
+MULTI = ["set_alarm", "set_timer", "create_reminder", "call_contact", "send_message", "set_flashlight", "set_volume",
+         "set_do_not_disturb", "media_control", "open_app", "play_media", "navigate", "camera"]
+JOINERS = [" and ", " and ", " and then ", ", then ", ". Also ", " and also ", ", and ", " then "]
 
 
 def valid(call) -> bool:
     a = call["arguments"]
-    if "time" in a and parse_time(a["time"]) is None:
+    if "time" in a and parse_when(a["time"]) is None:
         return False
     if "duration" in a and parse_duration(a["duration"]) is None:
         return False
     return True
 
 
+def multi(noise: bool):
+    """Two (sometimes three) different actions in one sentence, calls in spoken order."""
+    k = 3 if R.random() < 0.15 else 2
+    names = R.sample(MULTI, k)
+    parts, calls = [], []
+    for name in names:
+        text, call = build(name, noise)
+        if not valid(call):
+            return None
+        parts.append(text)
+        calls.append(call)
+    text = parts[0]
+    for part in parts[1:]:
+        # "Also turn on DND", but "and WhatsApp mom" keeps its capital.
+        text += R.choice(JOINERS) + (part[0].lower() + part[1:] if part[1:2].islower() else part)
+    return text, calls
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--n", type=int, default=4000, help="total examples (train + val)")
+    p.add_argument("--n", type=int, default=9000, help="total examples (train + val)")
     p.add_argument("--noise", type=float, default=0.4, help="fraction with transcription noise")
     p.add_argument("--no-call", type=float, default=0.15, help="fraction of non-commands")
+    p.add_argument("--multi", type=float, default=0.12, help="fraction of commands with several actions")
     p.add_argument("--val", type=float, default=0.1)
     p.add_argument("--seed", type=int, default=0)
     a = p.parse_args()
     R.seed(a.seed)
 
-    eval_texts = {json.loads(l)["text"].lower().strip(" .,?") for name in ("eval_seed.jsonl", "eval_phone.jsonl")
+    eval_texts = {json.loads(l)["text"].lower().strip(" .,?") for name in ("eval_seed.jsonl", "eval_phone.jsonl", "eval_v3.jsonl")
                   for l in open(os.path.join(HERE, "data", name))}
     names, weights = list(WEIGHTS), list(WEIGHTS.values())
     seen, rows = {}, []
@@ -352,29 +498,46 @@ def main():
         noise = R.random() < a.noise
         if R.random() < a.no_call:
             kind = R.random()
-            if kind < 0.25:
+            if kind < 0.22:
                 text = R.choice(NAME_CHAT).format(n=R.choice([c for c in CONTACTS if not c.startswith(("my ", "the "))]))
-            elif kind < 0.45:
+            elif kind < 0.4:
                 text = R.choice(TIME_CHAT).format(t=spoken_time())
+            elif kind < 0.43:
+                text = R.choice(DIGITS)
+            elif kind < 0.55:  # garbled speech: misheard words must not turn into an action
+                words = R.choice(NON_COMMANDS).split()
+                for _ in range(R.randint(1, 2)):
+                    i = R.randrange(len(words))
+                    words[i] = garble_word(words[i])
+                text = " ".join(words)
             else:
                 text = R.choice(NON_COMMANDS)
-            call = None
+            calls = []
             if noise and R.random() < 0.5:
+                text = R.choice(WAKE_RESIDUE) + text
+        elif R.random() < a.multi:
+            built = multi(noise)
+            if built is None:
+                continue
+            text, calls = built
+            if noise and R.random() < 0.35:
                 text = R.choice(WAKE_RESIDUE) + text
         else:
             text, call = build(R.choices(names, weights)[0], noise)
             if not valid(call):
                 continue
+            calls = [call]
             if noise and R.random() < 0.35:
                 text = R.choice(WAKE_RESIDUE) + text
         text = surface(text, asr_style=noise)
         key = text.lower().strip(" .,?")
         # Fixed-phrase functions have few distinct phrasings; allow a few repeats so they aren't starved.
-        limit = 3 if call and call["name"] in FIXED else 1
-        if key in eval_texts or (call is not None and seen.get(key, 0) >= limit):
+        limit = 3 if len(calls) == 1 and calls[0]["name"] in FIXED else 1
+        if key in eval_texts or (calls and seen.get(key, 0) >= limit):
             continue
         seen[key] = seen.get(key, 0) + 1
-        rows.append(example(text, call, {"noise": noise, "function": call["name"] if call else None}))
+        function = None if not calls else calls[0]["name"] if len(calls) == 1 else "multi"
+        rows.append(example(text, calls, {"noise": noise, "function": function}))
 
     R.shuffle(rows)
     n_val = int(len(rows) * a.val)

@@ -53,13 +53,22 @@ private val EXAMPLES = listOf(
     "Saturn reminded that I want to go to hospital tomorrow",
     "Calm mom",
     "What are you doing",
+    "What can you do",
+    "Set an alarm after 6 hours",
+    "Stop the alarm of six am",
+    "Open youtube and play a bollywood song",
+    "Play Arijit Singh on Spotify",
+    "Turn on do not disturb and set an alarm for 6",
+    "Open WhatsApp and message Rahul I'm late",
+    "Navigate to the airport",
+    "Open the camera in selfie mode",
 )
 
 @Composable
 fun ChatTab(onLoadModel: () -> Unit, onUnloadModel: () -> Unit, onSend: (String) -> Unit) {
     val server by LlmServer.state.collectAsStateWithLifecycle()
     val turns by LlmChat.turns.collectAsStateWithLifecycle()
-    val routeVoice by LlmChat.routeVoice.collectAsStateWithLifecycle()
+    val runTyped by LlmChat.runTypedActions.collectAsStateWithLifecycle()
     var input by rememberSaveable { mutableStateOf("") }
     val ready = server is LlmServer.State.Ready
     val listState = rememberLazyListState()
@@ -93,8 +102,15 @@ fun ChatTab(onLoadModel: () -> Unit, onUnloadModel: () -> Unit, onSend: (String)
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Also run voice commands", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-            Switch(checked = routeVoice, onCheckedChange = { LlmChat.routeVoice.value = it })
+            Column(Modifier.weight(1f)) {
+                Text("Carry out typed commands", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    "Voice commands always run. Off: typed ones only show the function call.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = runTyped, onCheckedChange = { LlmChat.runTypedActions.value = it })
         }
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(EXAMPLES) { ex -> AssistChip(onClick = { send(ex) }, enabled = ready, label = { Text(ex) }) }
@@ -141,16 +157,28 @@ private fun TurnView(turn: ChatTurn) {
                 when {
                     turn.pending -> Text("Thinking…", style = MaterialTheme.typography.bodyMedium)
                     turn.error != null -> Text("Error: ${turn.error}", color = MaterialTheme.colorScheme.error)
-                    turn.call != null -> {
-                        Text(turn.call.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        if (turn.call.args.isEmpty()) Text("(no arguments)", style = MaterialTheme.typography.bodySmall)
-                        for ((k, v) in turn.call.args) {
+                    turn.calls.isNotEmpty() -> for ((i, call) in turn.calls.withIndex()) {
+                        val prefix = if (turn.calls.size > 1) "${i + 1}. " else ""
+                        Text(prefix + call.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        if (call.args.isEmpty()) Text("(no arguments)", style = MaterialTheme.typography.bodySmall)
+                        for ((k, v) in call.args) {
                             Text("$k = $v", style = MaterialTheme.typography.bodyMedium, fontFamily = FontFamily.Monospace)
                         }
                     }
+                    turn.raw.isBlank() && turn.guard != null -> Text("Handled without the model", style = MaterialTheme.typography.titleSmall)
                     else -> Text("No function call", style = MaterialTheme.typography.titleSmall)
                 }
-                if (!turn.pending && turn.error == null) {
+                turn.guard?.let {
+                    Text("guard: $it", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
+                }
+                turn.action?.let { a ->
+                    Text(
+                        (if (a.ok) "✓ " else "✗ ") + "\"${a.say}\"",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (a.ok) androidx.compose.ui.graphics.Color(0xFF43A047) else MaterialTheme.colorScheme.error,
+                    )
+                }
+                if (!turn.pending && turn.error == null && turn.raw.isNotBlank()) {
                     Text(
                         turn.raw.ifBlank { "(empty)" },
                         style = MaterialTheme.typography.bodySmall,

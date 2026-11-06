@@ -16,3 +16,23 @@
 {"text": "What are you doing Dave", "source": "none", "expect": null}
 {"text": "Is what else you can do", "source": "none", "expect": null}
 {"text": "It's", "source": "none", "expect": null}
+{"text": "Set alarm after 6 hours", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 hours"}}}
+{"text": "Alarm set alarm after 6 hours", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 hours"}}}
+{"text": "Set a lamp after six hours", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "six hours"}}}
+{"text": "Page set alarm for 6 am", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 am"}}}
+{"text": "Open youtube and play any bollywood song", "source": "asr_real", "expect": {"name": "play_media", "args": {"query": "bollywood song", "app": "youtube"}}}
+{"text": "1. Play little things on Spotify", "source": "asr_real", "expect": {"name": "play_media", "args": {"query": "little things", "app": "Spotify"}}}
+{"text": "Stop the alarm of six am", "source": "asr_real", "expect": {"name": "dismiss_alarm", "args": {"action": "dismiss", "time": "six am"}}}
+{"text": "It's top the alarm", "source": "asr_real", "expect": {"name": "dismiss_alarm", "args": {"action": "dismiss"}}}
+{"text": "Open what's up", "source": "asr_real", "expect": {"name": "open_app", "args": {"app": "WhatsApp"}}}
+{"text": "Call Sima Moushi", "source": "asr_real", "expect": {"name": "call_contact", "args": {"contact": "Sima Moushi"}}}
+{"text": "Push it. Turn on the flashlight. Ah", "source": "asr_real", "expect": {"name": "set_flashlight", "args": {"state": "on"}}}
+{"text": "What are the tasks you can", "source": "none", "expect": null}
+{"text": "Okay, Hg you may examples of class you can do locally", "source": "none", "expect": null}
+{"text": "100000000000000000000000000000000000000000000000000000", "source": "none", "expect": null}
+{"text": "Conde", "source": "none", "expect": null}
+{"text": "Corned-head", "source": "none", "expect": null}
+{"text": "The internet is not a phone app, but it is a big deal", "source": "none", "expect": null}
+{"text": "That's not plastic", "source": "none", "expect": null}
+{"text": "Do it work", "source": "none", "expect": null}
+{"text": "What is this? Tina. What is this? Tina is a very excellent", "source": "none", "expect": null}
