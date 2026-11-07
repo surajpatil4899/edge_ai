@@ -13,8 +13,8 @@ android {
         applicationId = "com.edgeai.assistant"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 3
+        versionName = "0.3.0"
         // arm64 for phones, x86_64 for the emulator; 32-bit ABIs would add ~45 MB for little benefit.
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }
@@ -62,8 +62,8 @@ dependencies {
 // and are copied into the APK's assets at build time; they are too big to commit.
 val modelsDir = rootProject.layout.projectDirectory.dir("../models")
 // The command model and the function schema it was trained with ship together: a model prompted with another
-// schema's tool list is outside what it learned. `./gradlew assembleDebug -PcommandModel=v3` once v3 is trained.
-val commandModel = providers.gradleProperty("commandModel").getOrElse("v2")
+// schema's tool list is outside what it learned. `-PcommandModel=v2` builds the previous model.
+val commandModel = providers.gradleProperty("commandModel").getOrElse("v3")
 val commandSchema = mapOf("v2" to "functions_v2.json", "v3" to "functions.json").getValue(commandModel)
 val copyModels by tasks.registering(Sync::class) {
     from(modelsDir.dir("sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01")) {

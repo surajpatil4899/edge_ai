@@ -271,6 +271,12 @@ NON_COMMANDS = [
     "what are the tasks you can do", "what all can you do", "tell me what you can do", "what are your features",
     "how can you help me", "what commands do you know", "give me examples of what you can do", "what can I ask you",
     "what do you do", "what are the things you can do locally", "help", "what are the tasks you can",
+    # sentences that mention apps, places or media but ask for nothing (v3 acted on these)
+    # (the three v3 missed are held out in eval_v3.jsonl, so these are look-alikes)
+    "I listened to Arijit Singh all day", "I watched a funny video on YouTube last night", "my uncle lives near the station", "Spotify is my favourite app", "the airport was crowded today",
+    "my brother is on WhatsApp all the time", "I saw petrol pumps on the way", "we played football in the evening",
+    "the camera on this phone is good", "I searched for it yesterday", "YouTube is slow today", "I love bollywood songs",
+    "my office is far from home", "she sent me a WhatsApp message", "the Play Store has too many apps",
     # fragments and background speech (field logs)
     "the internet is not a phone app but it is a big deal", "that's not plastic", "do it work", "what is this",
     "if you don't have a car you can't do it", "push it", "conde", "corned head", "ah", "yeah yeah",

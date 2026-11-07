@@ -8,6 +8,7 @@ class EdgeApp : Application() {
         super.onCreate()
         AppLogs.init(this)
         AppLogs.installCrashHandler()
+        Prefs.init(this)
         AssistantState.lastExit.value = AppLogs.recordExitReasons(this)
     }
 }

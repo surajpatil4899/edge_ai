@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-enum class Perm { CALLS, CONTACTS, OVERLAY, EXACT_ALARMS, DND, BATTERY }
+enum class Perm { MIC, NOTIFICATIONS, CALLS, CONTACTS, OVERLAY, EXACT_ALARMS, DND, BATTERY }
 
 enum class Status { Stopped, Loading, WaitingForWake, Listening, Transcribing, Error }
 
@@ -28,6 +28,9 @@ object AssistantState {
 
     private val _log = MutableStateFlow<List<LogEntry>>(emptyList())
     val log: StateFlow<List<LogEntry>> = _log.asStateFlow()
+
+    /** A command is being worked out and carried out (model, then action). */
+    val thinking = MutableStateFlow(false)
 
     /** Set by the UI's "tap to speak" button; consumed by the pipeline on the audio thread. */
     val manualTrigger = AtomicBoolean(false)

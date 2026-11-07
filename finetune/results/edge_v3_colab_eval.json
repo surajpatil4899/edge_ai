@@ -1,0 +1,5828 @@
+{
+ "base": [
+  {
+   "text": "Set an alarm for 6 am tomorrow",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "tomorrow",
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>12:00 AM<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "12:00 AM"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='12:00 AM' (want '6 am')"
+   ]
+  },
+  {
+   "text": "Wake me up at 7:30",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "7:30"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with waking you up. My current capabilities are limited to assisting with phone calls, managing reminders, setting alarms, and managing media control. I cannot generate personalized wake-up calls or manage your daily schedule.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want set_alarm)"
+   ]
+  },
+  {
+   "text": "Set an alarm for 5:45 pm",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "5:45 pm"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>friday<escape>,time:<escape>17:45<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "friday",
+      "time": "17:45"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra day=friday"
+   ]
+  },
+  {
+   "text": "Alarm at 10 pm for medicine",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "label": "medicine",
+     "time": "10 pm"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>10:00 PM<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "10:00 PM"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "missing label=medicine",
+    "extra day=tomorrow"
+   ]
+  },
+  {
+   "text": "Set an alarm for 6 am on Monday",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "monday",
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>12:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "12:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='12:00' (want '6 am')"
+   ]
+  },
+  {
+   "text": "Set a timer for 10 minutes",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "10 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>10 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "10 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Start a timer for 1 hour 30 minutes",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "1 hour 30 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Timer for 45 seconds",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "45 seconds"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>45 seconds<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "45 seconds"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a 5 minute timer",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "5 minute"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>5 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to buy milk at 5 pm",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "buy milk",
+     "time": "5 pm"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>20 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "20 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Remind me to call the bank tomorrow",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "call the bank",
+     "day": "tomorrow"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>tomorrow<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "tomorrow"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Remind me that I have a doctor's appointment tomorrow at 9 am",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "doctor's appointment",
+     "day": "tomorrow",
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Remind me to take my medicine at 8:30 tonight",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "take my medicine",
+     "time": "8:30 tonight"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>80 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "80 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Call mom",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "mom"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>mom<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "mom"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Call Rahul",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Rahul"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>Rahul<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "Rahul"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Phone 9876543210",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "9876543210"
+    }
+   },
+   "raw": "<start_function_call>call:search_app_store{query:<escape>9876543210<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_app_store",
+     "args": {
+      "query": "9876543210"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_app_store (want call_contact)"
+   ]
+  },
+  {
+   "text": "Give dad a call",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "dad"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with calling a dad. My current capabilities are limited to assisting with phone and communication functions such as setting alarms, managing timers, starting reminders, sending messages, managing maps, and accessing camera information. I cannot connect with or handle personal or family-related calls.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want call_contact)"
+   ]
+  },
+  {
+   "text": "Send a message to Rahul saying I will be late",
+   "source": "clean",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "Rahul",
+     "message": "I will be late"
+    }
+   },
+   "raw": "<start_function_call>call:message_app{app:<escape>WhatsApp<escape>,message:<escape>I will be late.<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "message": "I will be late."
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called message_app (want send_message)"
+   ]
+  },
+  {
+   "text": "Text mom that I reached home",
+   "source": "clean",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "mom",
+     "message": "I reached home"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{message:<escape>I reached home<escape>,contact:<escape>mom<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "message": "I reached home",
+      "contact": "mom"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Message Priya good morning",
+   "source": "clean",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "Priya",
+     "message": "good morning"
+    }
+   },
+   "raw": "<start_function_call>call:message_app{app:<escape>WhatsApp<escape>,contact:<escape>priya<escape>,message:<escape>Good morning Priya! Welcome.<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "contact": "priya",
+      "message": "Good morning Priya! Welcome."
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called message_app (want send_message)"
+   ]
+  },
+  {
+   "text": "Turn on the flashlight",
+   "source": "clean",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn off the torch",
+   "source": "clean",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>off<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "off"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Torch on",
+   "source": "clean",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Volume up",
+   "source": "clean",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Mute the phone",
+   "source": "clean",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "mute"
+    }
+   },
+   "raw": "<start_function_call>call:set_mute{action:<escape>mute<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_mute",
+     "args": {
+      "action": "mute"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_mute (want set_volume)"
+   ]
+  },
+  {
+   "text": "Put my phone on vibrate",
+   "source": "clean",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "vibrate"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "action=up (want vibrate)"
+   ]
+  },
+  {
+   "text": "Turn on do not disturb",
+   "source": "clean",
+   "expect": {
+    "name": "set_do_not_disturb",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:wake_up{}<end_function_call>",
+   "got": [
+    {
+     "name": "wake_up",
+     "args": {}
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called wake_up (want set_do_not_disturb)"
+   ]
+  },
+  {
+   "text": "Disable DND",
+   "source": "clean",
+   "expect": {
+    "name": "set_do_not_disturb",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "I am sorry, but I cannot assist with disabling DND settings. My current capabilities are limited to calling specific tools for managing phone and alarm functions like setting alarms, managing timers, and managing contacts. I cannot provide assistance with managing device settings like DND.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want set_do_not_disturb)"
+   ]
+  },
+  {
+   "text": "Pause the music",
+   "source": "clean",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "pause"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>pause<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "pause"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Next song",
+   "source": "clean",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "next"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>YouTube Music<escape>,query:<escape>Arijit Singh Bollywood songs<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "YouTube Music",
+      "query": "Arijit Singh Bollywood songs"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called play_media (want media_control)"
+   ]
+  },
+  {
+   "text": "Play music",
+   "source": "clean",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "play"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>YouTube Music<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "YouTube Music"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called play_media (want media_control)"
+   ]
+  },
+  {
+   "text": "Open WhatsApp",
+   "source": "clean",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "WhatsApp"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>WhatsApp<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "WhatsApp"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called navigate (want open_app)"
+   ]
+  },
+  {
+   "text": "Open the camera",
+   "source": "clean",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "camera"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called camera (want open_app)"
+   ]
+  },
+  {
+   "text": "Stop the alarm",
+   "source": "clean",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>270<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "270"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want dismiss_alarm)"
+   ]
+  },
+  {
+   "text": "Snooze",
+   "source": "clean",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "snooze"
+    }
+   },
+   "raw": "<start_function_call>call:web_search{query:<escape>snooze<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "web_search",
+     "args": {
+      "query": "snooze"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called web_search (want dismiss_alarm)"
+   ]
+  },
+  {
+   "text": "Set a alarm for 6 a.m",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 a.m"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>12:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "12:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='12:00' (want '6 a.m')",
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Set a alarm for 2am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "2am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tuesday<escape>,time:<escape>2am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tuesday",
+      "time": "2am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra day=tuesday"
+   ]
+  },
+  {
+   "text": "Is set alarm for 9 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>9 AM<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "9 AM"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "It's volume up",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Saturn reminded that I want to go to hospital tomorrow",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "go to hospital",
+     "day": "tomorrow"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>monday<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "monday"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Calm mom",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "mom"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with managing family schedules or managing specific requests like \"Calm mom.\" My current capabilities are limited to calling specific tools for phone management, setting alarms, managing timers, and sending messages. I cannot provide personalized advice or assistance with managing family schedules or requests.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want call_contact)"
+   ]
+  },
+  {
+   "text": "It's called Sanket",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Sanket"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with creating or managing personal accounts or managing contacts. My current capabilities are limited to calling specific tools like setting alarms, managing timers, sending messages, managing maps, and accessing chat apps. I cannot generate or manage personal accounts or contacts.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want call_contact)"
+   ]
+  },
+  {
+   "text": "Set in alarm for 7:30 tomorrow morning",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "tomorrow",
+     "time": "7:30 morning"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>7:30<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "7:30"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Said an alarm for seven thirty to-morrow morning",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "tomorrow",
+     "time": "seven thirty morning"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>seven thirty<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "seven thirty"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "day=monday (want tomorrow)"
+   ]
+  },
+  {
+   "text": "Send the text to Rawl saying I will be late",
+   "source": "asr_real",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "Rawl",
+     "message": "I will be late"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{message:<escape>I will be late<escape>,contact:<escape>Rawl<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "message": "I will be late",
+      "contact": "Rawl"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Purn on the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>play<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "play"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called media_control (want set_flashlight)"
+   ]
+  },
+  {
+   "text": "Okay edge turn on the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:open_app{app:<escape>camera<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "open_app",
+     "args": {
+      "app": "camera"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called open_app (want set_flashlight)"
+   ]
+  },
+  {
+   "text": "Set a timer for ten minutes,",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "ten minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>10 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "10 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to buy milk at six p. m.",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "buy milk",
+     "time": "six p. m."
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Set alarm for 6 am.",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tuesday<escape>,time:<escape>12:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tuesday",
+      "time": "12:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='12:00' (want '6 am')",
+    "extra day=tuesday"
+   ]
+  },
+  {
+   "text": "Is timer for 5 minutes",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "5 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>5 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's open camera",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "camera"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called camera (want open_app)"
+   ]
+  },
+  {
+   "text": "Turn of the torch",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call><start_function_call>call:turn_on_torch{}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "turn_on_torch",
+     "args": {}
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_flashlight+turn_on_torch (want set_flashlight)"
+   ]
+  },
+  {
+   "text": "Pass the music",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "pause"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>play<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "play"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "action=play (want pause)"
+   ]
+  },
+  {
+   "text": "Send message to mom saying coming home",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "mom",
+     "message": "coming home"
+    }
+   },
+   "raw": "<start_function_call>call:message_app{app:<escape>WhatsApp<escape>,message:<escape>coming home<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "message": "coming home"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called message_app (want send_message)"
+   ]
+  },
+  {
+   "text": "Remind me to pay electricity bill on Friday",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "pay electricity bill",
+     "day": "friday"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "What are you doing",
+   "source": "none",
+   "expect": null,
+   "raw": "I'm doing something! What can I help you with?<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What are you doing Dave",
+   "source": "none",
+   "expect": null,
+   "raw": "I am sorry, but I cannot assist with tasks related to managing Dave's schedule or activities. My current capabilities are limited to assisting with phone calls, setting timers, managing alarms, and sending messages. I cannot perform tasks related to managing Dave's schedule or activities.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is what else you can do",
+   "source": "none",
+   "expect": null,
+   "raw": "I'm sorry, but I cannot assist with that request. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, sending messages, and managing maps. I cannot provide advice or assistance with personal or professional business topics.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's",
+   "source": "none",
+   "expect": null,
+   "raw": "I can help with that. What would you like to do?<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "How are you",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with asking how I am. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, sending messages, and managing maps. I cannot provide personal or emotional advice on how I am.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "The traffic was terrible this morning",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with managing traffic or providing advice on road conditions. My current tools are focused on calling specific functions like setting alarms, managing contacts, and managing media. I cannot provide information or assistance with traffic planning or road maintenance.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Okay",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with managing or organizing personal information like contacts or schedules. My current capabilities are limited to calling, managing contacts, and controlling phone functions like setting alarms, recording calls, and managing media. I cannot provide assistance with managing personal or professional contacts.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "I am very happy to be able to speak to you today",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:set_alarm{day:<escape>today<escape>,time:<escape>monday<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "today",
+      "time": "monday"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm on a non-command"
+   ]
+  },
+  {
+   "text": "What is the weather today",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:set_alarm{day:<escape>today<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "today"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm on a non-command"
+   ]
+  },
+  {
+   "text": "Thank you",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with managing or organizing personal information like contacts or schedules. My current capabilities are limited to calling, managing contacts, and controlling phone functions like setting alarms, recording calls, and managing media. I cannot provide assistance with managing personal or professional contacts.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  }
+ ],
+ "tuned": [
+  {
+   "text": "Set an alarm for 6 am tomorrow",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "tomorrow",
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Wake me up at 7:30",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "7:30"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>7:30<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "7:30"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set an alarm for 5:45 pm",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "5:45 pm"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>5:45 pm<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "5:45 pm"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Alarm at 10 pm for medicine",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "label": "medicine",
+     "time": "10 pm"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{label:<escape>medicine<escape>,time:<escape>10 pm<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "label": "medicine",
+      "time": "10 pm"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set an alarm for 6 am on Monday",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "monday",
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a timer for 10 minutes",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "10 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>10 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "10 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Start a timer for 1 hour 30 minutes",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "1 hour 30 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Timer for 45 seconds",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "45 seconds"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>45 seconds<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "45 seconds"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a 5 minute timer",
+   "source": "clean",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "5 minute"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>5 minute<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minute"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to buy milk at 5 pm",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "buy milk",
+     "time": "5 pm"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{text:<escape>buy milk<escape>,time:<escape>5 pm<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "buy milk",
+      "time": "5 pm"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to call the bank tomorrow",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "call the bank",
+     "day": "tomorrow"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{day:<escape>tomorrow<escape>,text:<escape>call the bank<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "day": "tomorrow",
+      "text": "call the bank"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me that I have a doctor's appointment tomorrow at 9 am",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "doctor's appointment",
+     "day": "tomorrow",
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{day:<escape>tomorrow<escape>,text:<escape>doctor's appointment<escape>,time:<escape>9 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "day": "tomorrow",
+      "text": "doctor's appointment",
+      "time": "9 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to take my medicine at 8:30 tonight",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "take my medicine",
+     "time": "8:30 tonight"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{text:<escape>take my medicine<escape>,time:<escape>8:30 tonight<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "take my medicine",
+      "time": "8:30 tonight"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Call mom",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "mom"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>mom<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "mom"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Call Rahul",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Rahul"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>Rahul<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "Rahul"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Phone 9876543210",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "9876543210"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>9876543210<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "9876543210"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Give dad a call",
+   "source": "clean",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "dad"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>dad<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "dad"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Send a message to Rahul saying I will be late",
+   "source": "clean",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "Rahul",
+     "message": "I will be late"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{contact:<escape>Rahul<escape>,message:<escape>I will be late<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "contact": "Rahul",
+      "message": "I will be late"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Text mom that I reached home",
+   "source": "clean",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "mom",
+     "message": "I reached home"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{contact:<escape>mom<escape>,message:<escape>I reached home<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "contact": "mom",
+      "message": "I reached home"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Message Priya good morning",
+   "source": "clean",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "Priya",
+     "message": "good morning"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{contact:<escape>Priya<escape>,message:<escape>good morning<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "contact": "Priya",
+      "message": "good morning"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn on the flashlight",
+   "source": "clean",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn off the torch",
+   "source": "clean",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>off<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "off"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Torch on",
+   "source": "clean",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Volume up",
+   "source": "clean",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Mute the phone",
+   "source": "clean",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "mute"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>mute<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "mute"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Put my phone on vibrate",
+   "source": "clean",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "vibrate"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>vibrate<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "vibrate"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn on do not disturb",
+   "source": "clean",
+   "expect": {
+    "name": "set_do_not_disturb",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_do_not_disturb{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Disable DND",
+   "source": "clean",
+   "expect": {
+    "name": "set_do_not_disturb",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:set_do_not_disturb{state:<escape>off<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "off"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Pause the music",
+   "source": "clean",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "pause"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>pause<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "pause"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Next song",
+   "source": "clean",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "next"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>next<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "next"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Play music",
+   "source": "clean",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "play"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>play<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "play"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open WhatsApp",
+   "source": "clean",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "WhatsApp"
+    }
+   },
+   "raw": "<start_function_call>call:open_app{app:<escape>WhatsApp<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "open_app",
+     "args": {
+      "app": "WhatsApp"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open the camera",
+   "source": "clean",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "camera"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called camera (want open_app)"
+   ]
+  },
+  {
+   "text": "Stop the alarm",
+   "source": "clean",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss"
+    }
+   },
+   "raw": "<start_function_call>call:dismiss_alarm{action:<escape>dismiss<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "dismiss_alarm",
+     "args": {
+      "action": "dismiss"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Snooze",
+   "source": "clean",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "snooze"
+    }
+   },
+   "raw": "<start_function_call>call:dismiss_alarm{action:<escape>snooze<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "dismiss_alarm",
+     "args": {
+      "action": "snooze"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a alarm for 6 a.m",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 a.m"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 a.m<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 a.m"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a alarm for 2am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "2am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>2am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "2am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is set alarm for 9 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>9 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "9 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's volume up",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Saturn reminded that I want to go to hospital tomorrow",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "go to hospital",
+     "day": "tomorrow"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{day:<escape>tomorrow<escape>,text:<escape>go to hospital<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "day": "tomorrow",
+      "text": "go to hospital"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Calm mom",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "mom"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>mom<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "mom"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's called Sanket",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Sanket"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>Sanket<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "Sanket"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set in alarm for 7:30 tomorrow morning",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "tomorrow",
+     "time": "7:30 morning"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>7:30<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "7:30"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Said an alarm for seven thirty to-morrow morning",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "day": "tomorrow",
+     "time": "seven thirty morning"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>seven thirty<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "seven thirty"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Send the text to Rawl saying I will be late",
+   "source": "asr_real",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "Rawl",
+     "message": "I will be late"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{contact:<escape>Rawl<escape>,message:<escape>I will be late<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "contact": "Rawl",
+      "message": "I will be late"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Purn on the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Okay edge turn on the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a timer for ten minutes,",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "ten minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>ten minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "ten minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to buy milk at six p. m.",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "buy milk",
+     "time": "six p. m."
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{text:<escape>buy milk<escape>,time:<escape>six p.m.<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "buy milk",
+      "time": "six p.m."
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set alarm for 6 am.",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is timer for 5 minutes",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "set_timer",
+    "args": {
+     "duration": "5 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>5 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's open camera",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "camera"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called camera (want open_app)"
+   ]
+  },
+  {
+   "text": "Turn of the torch",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>off<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "off"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Pass the music",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "media_control",
+    "args": {
+     "action": "pause"
+    }
+   },
+   "raw": "<start_function_call>call:media_control{action:<escape>pause<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "pause"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Send message to mom saying coming home",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "send_message",
+    "args": {
+     "contact": "mom",
+     "message": "coming home"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{contact:<escape>mom<escape>,message:<escape>coming home<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "contact": "mom",
+      "message": "coming home"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to pay electricity bill on Friday",
+   "source": "asr_synthetic",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "pay electricity bill",
+     "day": "friday"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{day:<escape>friday<escape>,text:<escape>pay electricity bill<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "day": "friday",
+      "text": "pay electricity bill"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What are you doing",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What are you doing Dave",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is what else you can do",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "How are you",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "The traffic was terrible this morning",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Okay",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "I am very happy to be able to speak to you today",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What is the weather today",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Thank you",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  }
+ ],
+ "base_phone": [
+  {
+   "text": "Which make me a pet 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with recommending pet breeds or specific pet breeds. My current capabilities are focused on calling specific phone functions like setting alarms and managing reminders. I cannot browse or recommend pet breeds or pet care products.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want set_alarm)"
+   ]
+  },
+  {
+   "text": "Wakniak up at 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>06:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "06:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Wake me up at 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:wake_up{}<end_function_call>",
+   "got": [
+    {
+     "name": "wake_up",
+     "args": {}
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called wake_up (want set_alarm)"
+   ]
+  },
+  {
+   "text": "Turn on the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn off the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:close_light_source{}<end_function_call>",
+   "got": [
+    {
+     "name": "close_light_source",
+     "args": {}
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called close_light_source (want set_flashlight)"
+   ]
+  },
+  {
+   "text": "How are you being",
+   "source": "none",
+   "expect": null,
+   "raw": "I'm doing well, thank you for asking. How are you?<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Volume up",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Wear him down",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "down"
+    }
+   },
+   "raw": "I am sorry, but I cannot assist with tailoring a garment or recommending clothing styles. My current capabilities are limited to assisting with phone calls, managing reminders, setting alarms, and managing media control. I cannot provide personalized advice or recommendations for personal care or garment care.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want set_volume)"
+   ]
+  },
+  {
+   "text": "Which set volume to maximum",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "max"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>max<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "max"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me that I have doctors appointment tomorrow 6 a.m",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "doctors appointment",
+     "day": "tomorrow",
+     "time": "6 a.m"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tomorrow<escape>,time:<escape>monday<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tomorrow",
+      "time": "monday"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Set a alarm for 6 a.m",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 a.m"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>12:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "12:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='12:00' (want '6 a.m')",
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Remind me that I have a doctor's appointment tomorrow at 9 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "doctor's appointment",
+     "day": "tomorrow",
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Is set alarm for 9 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>9 AM<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "9 AM"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "It's volume up",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's called Sanket",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Sanket"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with creating or managing personal accounts or managing contacts. My current capabilities are limited to calling specific tools like setting alarms, managing timers, sending messages, managing maps, and accessing chat apps. I cannot generate or manage personal accounts or contacts.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want call_contact)"
+   ]
+  },
+  {
+   "text": "What are you doing Dave",
+   "source": "none",
+   "expect": null,
+   "raw": "I am sorry, but I cannot assist with tasks related to managing Dave's schedule or activities. My current capabilities are limited to assisting with phone calls, setting timers, managing alarms, and sending messages. I cannot perform tasks related to managing Dave's schedule or activities.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is what else you can do",
+   "source": "none",
+   "expect": null,
+   "raw": "I'm sorry, but I cannot assist with that request. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, sending messages, and managing maps. I cannot provide advice or assistance with personal or professional business topics.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's",
+   "source": "none",
+   "expect": null,
+   "raw": "I can help with that. What would you like to do?<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set alarm after 6 hours",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>18:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "18:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='18:00' (want '6 hours')",
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Alarm set alarm after 6 hours",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>18:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "18:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='18:00' (want '6 hours')",
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Set a lamp after six hours",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "six hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>18:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "18:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='18:00' (want 'six hours')",
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Page set alarm for 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>tuesday<escape>,time:<escape>12:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "tuesday",
+      "time": "12:00"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time='12:00' (want '6 am')",
+    "extra day=tuesday"
+   ]
+  },
+  {
+   "text": "Open youtube and play any bollywood song",
+   "source": "asr_real",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "bollywood song",
+     "app": "youtube"
+    }
+   },
+   "raw": "<start_function_call>call:search_maps{query:<escape>Bollywood song<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "Bollywood song"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_maps (want play_media)"
+   ]
+  },
+  {
+   "text": "1. Play little things on Spotify",
+   "source": "asr_real",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "little things",
+     "app": "Spotify"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>Spotify<escape>,query:<escape>little things<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "Spotify",
+      "query": "little things"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Stop the alarm of six am",
+   "source": "asr_real",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss",
+     "time": "six am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want dismiss_alarm)"
+   ]
+  },
+  {
+   "text": "It's top the alarm",
+   "source": "asr_real",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>12:00<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "12:00"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want dismiss_alarm)"
+   ]
+  },
+  {
+   "text": "Open what's up",
+   "source": "asr_real",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "WhatsApp"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>Pune station<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "Pune station"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called navigate (want open_app)"
+   ]
+  },
+  {
+   "text": "Call Sima Moushi",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Sima Moushi"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>Sima Moushi<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "Sima Moushi"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Push it. Turn on the flashlight. Ah",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What are the tasks you can",
+   "source": "none",
+   "expect": null,
+   "raw": "I can assist with a wide range of tasks, such as managing your phone's clock, setting alarms, starting timers, managing your media, controlling your voice assistant, and browsing your maps. I don't have the ability to provide specific tasks for tasks you haven't mentioned. If you have another task you'd like to perform, feel free to ask!<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Okay, Hg you may examples of class you can do locally",
+   "source": "none",
+   "expect": null,
+   "raw": "I am sorry, but I cannot assist with generating specific examples of class or programming tasks. My current capabilities are focused on calling specific tools for phone management, communication, and navigation. I cannot provide programming or instructional examples for software development.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "100000000000000000000000000000000000000000000000000000",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call><start_function_call>call:open_app{app:<escape>WhatsApp<escape>}<end_function_call><start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    },
+    {
+     "name": "open_app",
+     "args": {
+      "app": "WhatsApp"
+     }
+    },
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_volume+open_app+camera on a non-command"
+   ]
+  },
+  {
+   "text": "Conde",
+   "source": "none",
+   "expect": null,
+   "raw": "I am sorry, but I cannot assist with this request. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, and managing alarms. I cannot provide information or assistance with the topic of \"Conde.\"<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Corned-head",
+   "source": "none",
+   "expect": null,
+   "raw": "I am sorry, but I cannot assist with this request. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, and managing alarms. I cannot provide information or assistance with trivia about historical or cultural topics.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "The internet is not a phone app, but it is a big deal",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with this request. My current capabilities are limited to assisting with phone and communication functions such as setting alarms, managing timers, sending messages, managing contacts, and managing maps. I cannot provide information or advice on internet usage or app store functionality.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "That's not plastic",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with this request. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, sending messages, managing maps, and accessing camera information. I cannot provide information or assistance with product searches or app store management.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Do it work",
+   "source": "none",
+   "expect": null,
+   "raw": "I am sorry, but I cannot assist with this request. My current capabilities are limited to calling specific tools for managing phone and communication functions like setting alarms, starting timers, managing contacts, and managing maps. I cannot troubleshoot device issues or perform complex app store searches.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What is this? Tina. What is this? Tina is a very excellent",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:search_app_store{query:<escape>Tina<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_app_store",
+     "args": {
+      "query": "Tina"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_app_store on a non-command"
+   ]
+  }
+ ],
+ "tuned_phone": [
+  {
+   "text": "Which make me a pet 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Wakniak up at 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Wake me up at 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn on the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn off the flashlight",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "off"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>off<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "off"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "How are you being",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Volume up",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Wear him down",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "down"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>down<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "down"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Which set volume to maximum",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "max"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>max<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "max"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me that I have doctors appointment tomorrow 6 a.m",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "doctors appointment",
+     "day": "tomorrow",
+     "time": "6 a.m"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{day:<escape>tomorrow<escape>,text:<escape>doctors appointment<escape>,time:<escape>6 a.m<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "day": "tomorrow",
+      "text": "doctors appointment",
+      "time": "6 a.m"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a alarm for 6 a.m",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 a.m"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 a.m<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 a.m"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me that I have a doctor's appointment tomorrow at 9 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "doctor's appointment",
+     "day": "tomorrow",
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{day:<escape>tomorrow<escape>,text:<escape>doctor's appointment<escape>,time:<escape>9 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "day": "tomorrow",
+      "text": "doctor's appointment",
+      "time": "9 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is set alarm for 9 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "9 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>9 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "9 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's volume up",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_volume",
+    "args": {
+     "action": "up"
+    }
+   },
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's called Sanket",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Sanket"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>Sanket<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "Sanket"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What are you doing Dave",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Is what else you can do",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set alarm after 6 hours",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 hours<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 hours"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Alarm set alarm after 6 hours",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 hours<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 hours"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set a lamp after six hours",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "six hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_flashlight (want set_alarm)"
+   ]
+  },
+  {
+   "text": "Page set alarm for 6 am",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "6 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open youtube and play any bollywood song",
+   "source": "asr_real",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "bollywood song",
+     "app": "youtube"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>youtube<escape>,query:<escape>bollywood song<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "youtube",
+      "query": "bollywood song"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "1. Play little things on Spotify",
+   "source": "asr_real",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "little things",
+     "app": "Spotify"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>Spotify<escape>,query:<escape>little things<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "Spotify",
+      "query": "little things"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Stop the alarm of six am",
+   "source": "asr_real",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss",
+     "time": "six am"
+    }
+   },
+   "raw": "<start_function_call>call:dismiss_alarm{action:<escape>dismiss<escape>,time:<escape>six am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "dismiss_alarm",
+     "args": {
+      "action": "dismiss",
+      "time": "six am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "It's top the alarm",
+   "source": "asr_real",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss"
+    }
+   },
+   "raw": "<start_function_call>call:dismiss_alarm{action:<escape>dismiss<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "dismiss_alarm",
+     "args": {
+      "action": "dismiss"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open what's up",
+   "source": "asr_real",
+   "expect": {
+    "name": "open_app",
+    "args": {
+     "app": "WhatsApp"
+    }
+   },
+   "raw": "<start_function_call>call:open_app{app:<escape>what's up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "open_app",
+     "args": {
+      "app": "what's up"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Call Sima Moushi",
+   "source": "asr_real",
+   "expect": {
+    "name": "call_contact",
+    "args": {
+     "contact": "Sima Moushi"
+    }
+   },
+   "raw": "<start_function_call>call:call_contact{contact:<escape>Sima Moushi<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "Sima Moushi"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Push it. Turn on the flashlight. Ah",
+   "source": "asr_real",
+   "expect": {
+    "name": "set_flashlight",
+    "args": {
+     "state": "on"
+    }
+   },
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What are the tasks you can",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Okay, Hg you may examples of class you can do locally",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "100000000000000000000000000000000000000000000000000000",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Conde",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Corned-head",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "The internet is not a phone app, but it is a big deal",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "That's not plastic",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Do it work",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What is this? Tina. What is this? Tina is a very excellent",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  }
+ ],
+ "base_v3": [
+  {
+   "text": "Play Arijit Singh on Spotify",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "Arijit Singh",
+     "app": "Spotify"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>Spotify<escape>,query:<escape>Arijit Singh<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "Spotify",
+      "query": "Arijit Singh"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open YouTube and play bollywood songs",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "bollywood songs",
+     "app": "YouTube"
+    }
+   },
+   "raw": "<start_function_call>call:web_search{query:<escape>Bollywood songs<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "web_search",
+     "args": {
+      "query": "Bollywood songs"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called web_search (want play_media)"
+   ]
+  },
+  {
+   "text": "Play some old Kishore Kumar songs",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "old Kishore Kumar songs"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>YouTube Music<escape>,query:<escape> Kishore Kumar songs<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "YouTube Music",
+      "query": " Kishore Kumar songs"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra app=YouTube Music"
+   ]
+  },
+  {
+   "text": "Put on Coldplay in YouTube Music",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "Coldplay",
+     "app": "YouTube Music"
+    }
+   },
+   "raw": "<start_function_call>call:search_maps{query:<escape>Put on Coldplay<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "Put on Coldplay"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_maps (want play_media)"
+   ]
+  },
+  {
+   "text": "Search Google for the weather in Pune",
+   "source": "clean",
+   "expect": {
+    "name": "web_search",
+    "args": {
+     "query": "the weather in Pune"
+    }
+   },
+   "raw": "<start_function_call>call:search_maps{query:<escape>Pune weather search<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "Pune weather search"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_maps (want web_search)"
+   ]
+  },
+  {
+   "text": "Look up the train status of Deccan Express",
+   "source": "clean",
+   "expect": {
+    "name": "web_search",
+    "args": {
+     "query": "train status of Deccan Express"
+    }
+   },
+   "raw": "I apologize, but I cannot assist with looking up train status. My current tools are focused on calling specific functions like setting alarms, managing timers, sending messages, managing contacts, and managing maps. I cannot access or lookup train information.<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want web_search)"
+   ]
+  },
+  {
+   "text": "Navigate to the airport",
+   "source": "clean",
+   "expect": {
+    "name": "navigate",
+    "args": {
+     "destination": "the airport"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>airport<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "airport"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "destination='airport' (want 'the airport')"
+   ]
+  },
+  {
+   "text": "Take me to Pune railway station",
+   "source": "clean",
+   "expect": {
+    "name": "navigate",
+    "args": {
+     "destination": "Pune railway station"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>Pune railway station<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "Pune railway station"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open Maps and find petrol pumps",
+   "source": "clean",
+   "expect": {
+    "name": "search_maps",
+    "args": {
+     "query": "petrol pumps"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>Pune station<escape>}<end_function_call><start_function_call>call:search_maps{query:<escape>petrol pumps<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "Pune station"
+     }
+    },
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "petrol pumps"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called navigate+search_maps (want search_maps)"
+   ]
+  },
+  {
+   "text": "Show me ATMs near me",
+   "source": "clean",
+   "expect": {
+    "name": "search_maps",
+    "args": {
+     "query": "ATMs"
+    }
+   },
+   "raw": "<start_function_call>call:search_maps{query:<escape>petrol pumps near me<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "petrol pumps near me"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "query='petrol pumps near me' (want 'ATMs')"
+   ]
+  },
+  {
+   "text": "Open WhatsApp and message Rahul I'm late",
+   "source": "clean",
+   "expect": {
+    "name": "message_app",
+    "args": {
+     "app": "WhatsApp",
+     "contact": "Rahul",
+     "message": "I'm late"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>Pune station<escape>}<end_function_call><start_function_call>call:message_app{app:<escape>WhatsApp<escape>,contact:<escape>Rahul<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "Pune station"
+     }
+    },
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "contact": "Rahul"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called navigate+message_app (want message_app)"
+   ]
+  },
+  {
+   "text": "Send a WhatsApp to mom saying I reached",
+   "source": "clean",
+   "expect": {
+    "name": "message_app",
+    "args": {
+     "app": "WhatsApp",
+     "contact": "mom",
+     "message": "I reached"
+    }
+   },
+   "raw": "<start_function_call>call:send_message{message:<escape>I reached <end_of_turn>",
+   "got": [
+    {
+     "name": "send_message",
+     "args": {
+      "message": "I reached <end_of_turn>"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called send_message (want message_app)"
+   ]
+  },
+  {
+   "text": "Open the camera in selfie mode",
+   "source": "clean",
+   "expect": {
+    "name": "camera",
+    "args": {
+     "mode": "selfie"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>selfie<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "selfie"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Record a video",
+   "source": "clean",
+   "expect": {
+    "name": "camera",
+    "args": {
+     "mode": "video"
+    }
+   },
+   "raw": "I can certainly assist with recording a video. To do that, could you please specify the desired length or duration for the video?<end_of_turn>",
+   "got": [],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called nothing (want camera)"
+   ]
+  },
+  {
+   "text": "Search the Play Store for Swiggy",
+   "source": "clean",
+   "expect": {
+    "name": "search_app_store",
+    "args": {
+     "query": "Swiggy"
+    }
+   },
+   "raw": "<start_function_call>call:search_app_store{query:<escape>Swiggy<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_app_store",
+     "args": {
+      "query": "Swiggy"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Install a PDF scanner app",
+   "source": "clean",
+   "expect": {
+    "name": "search_app_store",
+    "args": {
+     "query": "PDF scanner app"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called camera (want search_app_store)"
+   ]
+  },
+  {
+   "text": "Set an alarm in 2 hours",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "2 hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>2 o'clock<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "2 o'clock"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "time=\"2 o'clock\" (want '2 hours')",
+    "extra day=monday"
+   ]
+  },
+  {
+   "text": "Remind me to drink water in 30 minutes",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "drink water",
+     "time": "30 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:set_timer{duration:<escape>30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "30 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_timer (want create_reminder)"
+   ]
+  },
+  {
+   "text": "Cancel my 7 am alarm",
+   "source": "clean",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss",
+     "time": "7 am"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>7 AM<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "7 AM"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm (want dismiss_alarm)"
+   ]
+  },
+  {
+   "text": "Turn on do not disturb and set an alarm for 6",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:wake_up{}<end_function_call><start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>6 o'clock<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "wake_up",
+     "args": {}
+    },
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "6 o'clock"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called wake_up+set_alarm (want set_do_not_disturb+set_alarm)"
+   ]
+  },
+  {
+   "text": "Turn on the flashlight and set a 5 minute timer",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minute"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call><start_function_call>call:set_timer{duration:<escape>5 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Pause the music and call dad",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "pause"
+     }
+    },
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "dad"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_volume{action:<escape>pause<escape>}<end_function_call><start_function_call>call:send_message{message:<escape>Call dad.<escape>,contact:<escape>dad<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "pause"
+     }
+    },
+    {
+     "name": "send_message",
+     "args": {
+      "message": "Call dad.",
+      "contact": "dad"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_volume+send_message (want media_control+call_contact)"
+   ]
+  },
+  {
+   "text": "Volume up and play Kesariya",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    },
+    {
+     "name": "play_media",
+     "args": {
+      "query": "Kesariya"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call><start_function_call>call:play_media{app:<escape>Kesariya<escape>,query:<escape>Kesariya music<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    },
+    {
+     "name": "play_media",
+     "args": {
+      "app": "Kesariya",
+      "query": "Kesariya music"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "extra app=Kesariya"
+   ]
+  },
+  {
+   "text": "Set an alarm for 6 am and remind me to take my medicine at 9",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    },
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "take my medicine",
+      "time": "9"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_alarm{day:<escape>monday<escape>,time:<escape>12:00<escape>}<end_function_call><start_function_call>call:set_timer{duration:<escape>1 hour 30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "day": "monday",
+      "time": "12:00"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "1 hour 30 minutes"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_alarm+set_timer (want set_alarm+create_reminder)"
+   ]
+  },
+  {
+   "text": "Open WhatsApp and turn on the flashlight",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "open_app",
+     "args": {
+      "app": "WhatsApp"
+     }
+    },
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:open_app{app:<escape>WhatsApp<escape>}<end_function_call><start_function_call>call:camera{mode:<escape>photo<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "open_app",
+     "args": {
+      "app": "WhatsApp"
+     }
+    },
+    {
+     "name": "camera",
+     "args": {
+      "mode": "photo"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called open_app+camera (want open_app+set_flashlight)"
+   ]
+  },
+  {
+   "text": "Mute the phone, then turn on do not disturb and set a timer for 20 minutes",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "mute"
+     }
+    },
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "20 minutes"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_do_not_disturb{state:<escape>on<escape>}<end_function_call><start_function_call>call:wake_up{}<end_function_call><start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "wake_up",
+     "args": {}
+    },
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called set_do_not_disturb+wake_up+set_volume (want set_volume+set_do_not_disturb+set_timer)"
+   ]
+  },
+  {
+   "text": "What can you do",
+   "source": "none",
+   "expect": null,
+   "raw": "I can assist with a wide range of tasks, such as setting alarms, starting timers, managing reminders, searching maps, and managing your camera. What would you like to do?<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Play cricket with me",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:play_media{app:<escape>Cricket<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "Cricket"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called play_media on a non-command"
+   ]
+  },
+  {
+   "text": "I watched a movie on YouTube yesterday",
+   "source": "none",
+   "expect": null,
+   "raw": "I apologize, but I cannot assist with watching movies or retrieving movie information. My current capabilities are limited to calling specific tools for managing phone calls, setting alarms, managing timers, and managing media control. I cannot connect with external services for accessing or retrieving movie content.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "My friend lives near the airport",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:search_maps{query:<escape>airport near Pune<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "airport near Pune"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_maps on a non-command"
+   ]
+  }
+ ],
+ "tuned_v3": [
+  {
+   "text": "Play Arijit Singh on Spotify",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "Arijit Singh",
+     "app": "Spotify"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>Spotify<escape>,query:<escape>Arijit Singh<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "Spotify",
+      "query": "Arijit Singh"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open YouTube and play bollywood songs",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "bollywood songs",
+     "app": "YouTube"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>YouTube<escape>,query:<escape>bollywood songs<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "YouTube",
+      "query": "bollywood songs"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Play some old Kishore Kumar songs",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "old Kishore Kumar songs"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{query:<escape>old Kishore Kumar songs<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "query": "old Kishore Kumar songs"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Put on Coldplay in YouTube Music",
+   "source": "clean",
+   "expect": {
+    "name": "play_media",
+    "args": {
+     "query": "Coldplay",
+     "app": "YouTube Music"
+    }
+   },
+   "raw": "<start_function_call>call:play_media{app:<escape>YouTube Music<escape>,query:<escape>Coldplay<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "YouTube Music",
+      "query": "Coldplay"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Search Google for the weather in Pune",
+   "source": "clean",
+   "expect": {
+    "name": "web_search",
+    "args": {
+     "query": "the weather in Pune"
+    }
+   },
+   "raw": "<start_function_call>call:web_search{query:<escape>the weather in Pune<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "web_search",
+     "args": {
+      "query": "the weather in Pune"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Look up the train status of Deccan Express",
+   "source": "clean",
+   "expect": {
+    "name": "web_search",
+    "args": {
+     "query": "train status of Deccan Express"
+    }
+   },
+   "raw": "<start_function_call>call:web_search{query:<escape>Deccan Express<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "web_search",
+     "args": {
+      "query": "Deccan Express"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": false,
+   "errors": [
+    "query='Deccan Express' (want 'train status of Deccan Express')"
+   ]
+  },
+  {
+   "text": "Navigate to the airport",
+   "source": "clean",
+   "expect": {
+    "name": "navigate",
+    "args": {
+     "destination": "the airport"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>the airport<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "the airport"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Take me to Pune railway station",
+   "source": "clean",
+   "expect": {
+    "name": "navigate",
+    "args": {
+     "destination": "Pune railway station"
+    }
+   },
+   "raw": "<start_function_call>call:navigate{destination:<escape>Pune railway station<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "navigate",
+     "args": {
+      "destination": "Pune railway station"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open Maps and find petrol pumps",
+   "source": "clean",
+   "expect": {
+    "name": "search_maps",
+    "args": {
+     "query": "petrol pumps"
+    }
+   },
+   "raw": "<start_function_call>call:search_maps{query:<escape>petrol pumps<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "petrol pumps"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Show me ATMs near me",
+   "source": "clean",
+   "expect": {
+    "name": "search_maps",
+    "args": {
+     "query": "ATMs"
+    }
+   },
+   "raw": "<start_function_call>call:search_maps{query:<escape>ATMs<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "ATMs"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open WhatsApp and message Rahul I'm late",
+   "source": "clean",
+   "expect": {
+    "name": "message_app",
+    "args": {
+     "app": "WhatsApp",
+     "contact": "Rahul",
+     "message": "I'm late"
+    }
+   },
+   "raw": "<start_function_call>call:message_app{app:<escape>WhatsApp<escape>,contact:<escape>Rahul<escape>,message:<escape>I'm late<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "contact": "Rahul",
+      "message": "I'm late"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Send a WhatsApp to mom saying I reached",
+   "source": "clean",
+   "expect": {
+    "name": "message_app",
+    "args": {
+     "app": "WhatsApp",
+     "contact": "mom",
+     "message": "I reached"
+    }
+   },
+   "raw": "<start_function_call>call:message_app{app:<escape>WhatsApp<escape>,contact:<escape>mom<escape>,message:<escape>I reached<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "contact": "mom",
+      "message": "I reached"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open the camera in selfie mode",
+   "source": "clean",
+   "expect": {
+    "name": "camera",
+    "args": {
+     "mode": "selfie"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>selfie<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "selfie"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Record a video",
+   "source": "clean",
+   "expect": {
+    "name": "camera",
+    "args": {
+     "mode": "video"
+    }
+   },
+   "raw": "<start_function_call>call:camera{mode:<escape>video<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "camera",
+     "args": {
+      "mode": "video"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Search the Play Store for Swiggy",
+   "source": "clean",
+   "expect": {
+    "name": "search_app_store",
+    "args": {
+     "query": "Swiggy"
+    }
+   },
+   "raw": "<start_function_call>call:search_app_store{query:<escape>Swiggy<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_app_store",
+     "args": {
+      "query": "Swiggy"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Install a PDF scanner app",
+   "source": "clean",
+   "expect": {
+    "name": "search_app_store",
+    "args": {
+     "query": "PDF scanner app"
+    }
+   },
+   "raw": "<start_function_call>call:search_app_store{query:<escape>a PDF scanner app<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_app_store",
+     "args": {
+      "query": "a PDF scanner app"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set an alarm in 2 hours",
+   "source": "clean",
+   "expect": {
+    "name": "set_alarm",
+    "args": {
+     "time": "2 hours"
+    }
+   },
+   "raw": "<start_function_call>call:set_alarm{time:<escape>2 hours<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "2 hours"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Remind me to drink water in 30 minutes",
+   "source": "clean",
+   "expect": {
+    "name": "create_reminder",
+    "args": {
+     "text": "drink water",
+     "time": "30 minutes"
+    }
+   },
+   "raw": "<start_function_call>call:create_reminder{text:<escape>drink water<escape>,time:<escape>30 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "drink water",
+      "time": "30 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Cancel my 7 am alarm",
+   "source": "clean",
+   "expect": {
+    "name": "dismiss_alarm",
+    "args": {
+     "action": "dismiss",
+     "time": "7 am"
+    }
+   },
+   "raw": "<start_function_call>call:dismiss_alarm{action:<escape>dismiss<escape>,time:<escape>7 am<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "dismiss_alarm",
+     "args": {
+      "action": "dismiss",
+      "time": "7 am"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn on do not disturb and set an alarm for 6",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_do_not_disturb{state:<escape>on<escape>}<end_function_call><start_function_call>call:set_alarm{time:<escape>6<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Turn on the flashlight and set a 5 minute timer",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minute"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_flashlight{state:<escape>on<escape>}<end_function_call><start_function_call>call:set_timer{duration:<escape>5 minute<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "5 minute"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Pause the music and call dad",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "pause"
+     }
+    },
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "dad"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:media_control{action:<escape>pause<escape>}<end_function_call><start_function_call>call:call_contact{contact:<escape>dad<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "media_control",
+     "args": {
+      "action": "pause"
+     }
+    },
+    {
+     "name": "call_contact",
+     "args": {
+      "contact": "dad"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Volume up and play Kesariya",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    },
+    {
+     "name": "play_media",
+     "args": {
+      "query": "Kesariya"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_volume{action:<escape>up<escape>}<end_function_call><start_function_call>call:play_media{query:<escape>Kesariya<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "up"
+     }
+    },
+    {
+     "name": "play_media",
+     "args": {
+      "query": "Kesariya"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Set an alarm for 6 am and remind me to take my medicine at 9",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    },
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "take my medicine",
+      "time": "9"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_alarm{time:<escape>6 am<escape>}<end_function_call><start_function_call>call:create_reminder{text:<escape>take my medicine<escape>,time:<escape>9<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_alarm",
+     "args": {
+      "time": "6 am"
+     }
+    },
+    {
+     "name": "create_reminder",
+     "args": {
+      "text": "take my medicine",
+      "time": "9"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Open WhatsApp and turn on the flashlight",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "open_app",
+     "args": {
+      "app": "WhatsApp"
+     }
+    },
+    {
+     "name": "set_flashlight",
+     "args": {
+      "state": "on"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:message_app{app:<escape>WhatsApp<escape>,contact:<escape>Sarah<escape>,message:<escape>on the flashlight<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "message_app",
+     "args": {
+      "app": "WhatsApp",
+      "contact": "Sarah",
+      "message": "on the flashlight"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called message_app (want open_app+set_flashlight)"
+   ]
+  },
+  {
+   "text": "Mute the phone, then turn on do not disturb and set a timer for 20 minutes",
+   "source": "multi",
+   "expect": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "mute"
+     }
+    },
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "20 minutes"
+     }
+    }
+   ],
+   "raw": "<start_function_call>call:set_volume{action:<escape>mute<escape>}<end_function_call><start_function_call>call:set_do_not_disturb{state:<escape>on<escape>}<end_function_call><start_function_call>call:set_timer{duration:<escape>20 minutes<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "set_volume",
+     "args": {
+      "action": "mute"
+     }
+    },
+    {
+     "name": "set_do_not_disturb",
+     "args": {
+      "state": "on"
+     }
+    },
+    {
+     "name": "set_timer",
+     "args": {
+      "duration": "20 minutes"
+     }
+    }
+   ],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "What can you do",
+   "source": "none",
+   "expect": null,
+   "raw": "Sorry, I can't help with that.<end_of_turn>",
+   "got": [],
+   "function_ok": true,
+   "exact": true,
+   "errors": []
+  },
+  {
+   "text": "Play cricket with me",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:play_media{query:<escape>cricket with me<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "query": "cricket with me"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called play_media on a non-command"
+   ]
+  },
+  {
+   "text": "I watched a movie on YouTube yesterday",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:play_media{app:<escape>YouTube<escape>,query:<escape>a movie<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "play_media",
+     "args": {
+      "app": "YouTube",
+      "query": "a movie"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called play_media on a non-command"
+   ]
+  },
+  {
+   "text": "My friend lives near the airport",
+   "source": "none",
+   "expect": null,
+   "raw": "<start_function_call>call:search_maps{query:<escape>the airport<escape>}<end_function_call>",
+   "got": [
+    {
+     "name": "search_maps",
+     "args": {
+      "query": "the airport"
+     }
+    }
+   ],
+   "function_ok": false,
+   "exact": false,
+   "errors": [
+    "called search_maps on a non-command"
+   ]
+  }
+ ]
+}

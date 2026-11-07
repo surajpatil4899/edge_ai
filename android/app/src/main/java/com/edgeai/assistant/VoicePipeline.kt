@@ -128,7 +128,7 @@ class VoicePipeline(assets: AssetManager, private val emit: (PipelineEvent) -> U
             // Fed even while listening so its 1.3 s window never holds stale audio that could re-fire.
             val detected = wakeModel.accept(samples)
             history.append(samples)
-            if (!listening && detected && clock >= wakeQuietUntil) {
+            if (!listening && detected && clock >= wakeQuietUntil && Prefs.wakeWord.value) {
                 emit(PipelineEvent.Wake("OKAY_EDGE (score %.2f)".format(wakeModel.lastDetectionScore)))
                 // Fires within ~0.1-0.3 s of the phrase ending; replay a little so a no-pause command keeps its
                 // first word (any "Edge" tail is stripped later by commandText).
@@ -136,7 +136,7 @@ class VoicePipeline(assets: AssetManager, private val emit: (PipelineEvent) -> U
                 return
             }
         }
-        if (listening) feedVad(samples) else if (wakeModel == null) spot(samples)
+        if (listening) feedVad(samples) else if (wakeModel == null && Prefs.wakeWord.value) spot(samples)
     }
 
     private fun spot(samples: FloatArray) {

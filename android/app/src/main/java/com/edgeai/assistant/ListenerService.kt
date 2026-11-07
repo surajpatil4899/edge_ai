@@ -8,6 +8,8 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.IBinder
@@ -24,9 +26,18 @@ class ListenerService : Service() {
     @Volatile private var recorder: SessionRecorder? = null
     private var worker: Thread? = null
 
+    /** Held from the wake until the command is heard: music apps pause, then resume when it is released. */
+    private val focus = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+        .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANT).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build())
+        .build()
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (worker != null) return START_NOT_STICKY
         startInForeground()
         running = true
@@ -121,14 +132,21 @@ class ListenerService : Service() {
         when (event) {
             is PipelineEvent.Wake -> {
                 Log.i(TAG, "wake: ${event.keyword}")
+                val audio = getSystemService(AudioManager::class.java)
+                if (audio.isMusicActive) AppLogs.activity("media was playing at this wake")
+                // Like phone assistants: pause music and videos while listening, so the command isn't drowned out.
+                audio.requestAudioFocus(focus)
                 tone.startTone(ToneGenerator.TONE_PROP_BEEP, 120)
                 AssistantState.add(LogEntry.Wake(now, event.keyword))
                 AssistantState.setStatus(Status.Listening)
             }
             PipelineEvent.Transcribing -> AssistantState.setStatus(Status.Transcribing)
             is PipelineEvent.Command -> {
+                getSystemService(AudioManager::class.java).abandonAudioFocusRequest(focus)
                 Log.i(TAG, "command: \"${event.text}\" heard \"${event.heard}\" (${event.audioSeconds}s audio, ASR ${event.asrMillis} ms)")
                 AssistantState.add(LogEntry.Command(now, event.text, event.audioSeconds, event.asrMillis))
+                // What ASR wrote before the wake word was stripped: shows dropped or merged words in field logs.
+                if (event.heard.trim() != event.text) AppLogs.activity("heard: \"${event.heard}\"")
                 thread(name = "command") { CommandRunner.run(this, event.text, fromVoice = true, execute = true) }
                 AssistantState.setStatus(Status.WaitingForWake)
             }
@@ -138,6 +156,7 @@ class ListenerService : Service() {
                 AssistantState.setStatus(Status.Listening)
             }
             PipelineEvent.Timeout -> {
+                getSystemService(AudioManager::class.java).abandonAudioFocusRequest(focus)
                 Log.i(TAG, "timeout")
                 AssistantState.info("No command heard")
                 AssistantState.setStatus(Status.WaitingForWake)
@@ -153,18 +172,23 @@ class ListenerService : Service() {
         val openApp = PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
         )
+        val stop = PendingIntent.getService(
+            this, 1, Intent(this, ListenerService::class.java).setAction(ACTION_STOP), PendingIntent.FLAG_IMMUTABLE,
+        )
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_mic)
-            .setContentTitle("Listening for \"Okay Edge\"")
-            .setContentText("All speech is processed on this device")
+            .setContentTitle(if (Prefs.wakeWord.value) "Say \"Okay Edge\" for a command" else "Edge Assistant is ready")
+            .setContentText("Everything you say stays on this phone")
             .setOngoing(true)
             .setContentIntent(openApp)
+            .addAction(0, "Stop listening", stop)
             .build()
         ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
     }
 
     companion object {
         private const val TAG = "EdgeListener"
+        const val ACTION_STOP = "com.edgeai.assistant.STOP"
         private const val CHANNEL_ID = "listener"
         private const val NOTIFICATION_ID = 1
         private const val SAMPLE_RATE = VoicePipeline.SAMPLE_RATE

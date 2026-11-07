@@ -253,28 +253,36 @@ class ActionExecutor(private val context: Context) {
         val app = named?.let(DeepLinks::mediaApp)
         if (named != null && app == null) {
             // An app without a known search link ("Hotstar"): open it rather than guess.
-            return openApp(named).let { if (it.ok) it.copy(say = "I can't search inside $named yet, so I'm just opening it.") else it }
+            return openApp(named).let { if (it.ok) it.copy(say = "Opening $named for you.") else it }
         }
-        if (app != null && app != DeepLinks.MediaApp.YOUTUBE && !installed(app.pkg)) {
-            return youtube(q, "${app.label} isn't installed, so here's $q on YouTube.")
+        if (app != null && !installed(app.pkg)) {
+            return launch(view(DeepLinks.youtubeSearch(q)), "Search YouTube for $q", "Here's $q on YouTube.")
         }
-        val player = app ?: DeepLinks.PLAY_FROM_SEARCH_ORDER.firstOrNull { installed(it.pkg) && playFromSearch(it.pkg, q) != null }
+        val player = app ?: DeepLinks.PLAY_FROM_SEARCH_ORDER.firstOrNull { installed(it.pkg) } ?: DeepLinks.MediaApp.YOUTUBE
+        val pkg = player.pkg.takeIf(this::installed)
         return when (player) {
-            null, DeepLinks.MediaApp.YOUTUBE -> youtube(q, "Here's $q on YouTube.")
-            else -> {
-                val intent = playFromSearch(player.pkg, q) ?: when (player) {
-                    DeepLinks.MediaApp.SPOTIFY -> view(DeepLinks.spotifySearch(q), player.pkg)
-                    DeepLinks.MediaApp.YOUTUBE_MUSIC -> view(DeepLinks.youtubeMusicSearch(q), player.pkg)
-                    else -> context.packageManager.getLaunchIntentForPackage(player.pkg)
-                        ?: return ActionResult(false, "I can't open ${player.label}.")
+            // Opening a specific video is what reliably starts playback; the "play this" requests only searched.
+            DeepLinks.MediaApp.YOUTUBE, DeepLinks.MediaApp.YOUTUBE_MUSIC -> {
+                val music = player == DeepLinks.MediaApp.YOUTUBE_MUSIC
+                val id = MediaSearch.youtubeVideo(q)
+                when {
+                    id != null -> launch(view(if (music) DeepLinks.youtubeMusicWatch(id) else DeepLinks.youtubeWatch(id), pkg),
+                        "Play $q on ${player.label}", "Playing $q on ${player.label}.")
+                    else -> launch(view(if (music) DeepLinks.youtubeMusicSearch(q) else DeepLinks.youtubeSearch(q), pkg),
+                        "Search ${player.label} for $q", "Here are the YouTube results for $q.")
                 }
-                launch(intent, "Play $q on ${player.label}", "Playing $q on ${player.label}.")
+            }
+            // Spotify only lets approved apps start songs; its search is as far as another app can go.
+            DeepLinks.MediaApp.SPOTIFY -> launch(view(DeepLinks.spotifySearch(q), pkg), "Search Spotify for $q",
+                "Here's $q on Spotify. Tap a song to start it.")
+            else -> {
+                if (MediaSearch.viaBrowser(context, player.pkg, q)) return ActionResult(true, "Playing $q on ${player.label}.")
+                val intent = playFromSearch(player.pkg, q) ?: context.packageManager.getLaunchIntentForPackage(player.pkg)
+                    ?: return ActionResult(false, "I can't open ${player.label}.")
+                launch(intent, "Play $q on ${player.label}", "Opening ${player.label} for $q.")
             }
         }
     }
-
-    private fun youtube(query: String, say: String) =
-        launch(view(DeepLinks.youtubeSearch(query), DeepLinks.MediaApp.YOUTUBE.pkg.takeIf(this::installed)), "Search YouTube for $query", say)
 
     /** The "play this" intent music apps take from assistants, if [pkg] handles it. */
     private fun playFromSearch(pkg: String, query: String): Intent? =
@@ -285,9 +293,12 @@ class ActionExecutor(private val context: Context) {
 
     private fun webSearch(query: String?): ActionResult {
         val q = query?.trim()?.takeIf { it.isNotEmpty() } ?: return ActionResult(false, "What should I search for?")
-        val search = Intent(Intent.ACTION_WEB_SEARCH).putExtra(SearchManager.QUERY, q)
-        val intent = search.takeIf { context.packageManager.resolveActivity(it, 0) != null } ?: view(DeepLinks.googleSearch(q))
-        return launch(intent, "Search for $q", "Searching for $q.")
+        // Always Google: the Google app if installed, else google.com in the browser (a bare web-search intent
+        // can land in Samsung Internet, Bing or a chooser, depending on the phone).
+        val intent = Intent(Intent.ACTION_WEB_SEARCH).putExtra(SearchManager.QUERY, q).setPackage(DeepLinks.GOOGLE_APP)
+            .takeIf { context.packageManager.resolveActivity(it, 0) != null }
+            ?: view(DeepLinks.googleSearch(q))
+        return launch(intent, "Google $q", "Searching Google for $q.")
     }
 
     private fun navigate(destination: String?): ActionResult {
@@ -312,7 +323,7 @@ class ActionExecutor(private val context: Context) {
         if (app != DeepLinks.ChatApp.WHATSAPP && app != DeepLinks.ChatApp.WHATSAPP_BUSINESS) {
             // Telegram and Signal have no link that opens a chat by phone number.
             val open = context.packageManager.getLaunchIntentForPackage(pkg) ?: return ActionResult(false, "I can't open ${app.label}.")
-            return launch(open, "Open ${app.label}", "I can't write messages in ${app.label} yet, so I'm just opening it.")
+            return launch(open, "Open ${app.label}", "Opening ${app.label} for you.")
         }
         val (name, number) = resolveNumber(spoken) ?: return ActionResult(false, "I couldn't find $spoken in your contacts.")
         val country = context.getSystemService(TelephonyManager::class.java)?.let { it.simCountryIso.ifBlank { it.networkCountryIso } }

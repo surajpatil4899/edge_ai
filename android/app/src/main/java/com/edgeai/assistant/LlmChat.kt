@@ -34,6 +34,8 @@ data class ChatTurn(
     /** Why [CommandGuard] answered or changed the call; null when the model's call ran as is. */
     val guard: String? = null,
     val actionMillis: Long = 0,
+    /** The user's verdict on the reply: true = right, false = wrong, null = none given. */
+    val feedback: Boolean? = null,
 ) {
     val call: FunctionCall? get() = calls.firstOrNull()
 }
@@ -45,8 +47,8 @@ object LlmChat {
     private val _turns = MutableStateFlow<List<ChatTurn>>(emptyList())
     val turns: StateFlow<List<ChatTurn>> = _turns.asStateFlow()
 
-    /** Typed chat commands are only shown by default; this also carries them out (voice commands always are). */
-    val runTypedActions = MutableStateFlow(false)
+    /** Typed commands are carried out like spoken ones; off (developer setting) only shows the function call. */
+    val runTypedActions = MutableStateFlow(true)
 
     private var tools: JSONArray? = null
 
@@ -57,6 +59,16 @@ object LlmChat {
     }
 
     fun setAction(id: Long, result: ActionResult) = _turns.update { list -> list.map { if (it.id == id) it.copy(action = result) else it } }
+
+    /** Thumbs up/down from a tester: shown on the reply and written to the chat log next to the command. */
+    fun setFeedback(context: Context, id: Long, good: Boolean) {
+        val turn = _turns.value.firstOrNull { it.id == id } ?: return
+        _turns.update { list -> list.map { if (it.id == id) it.copy(feedback = good) else it } }
+        val line = JSONObject().put("time", System.currentTimeMillis()).put("feedback", if (good) "right" else "wrong")
+            .put("text", turn.user).put("reply", turn.action?.say ?: JSONObject.NULL)
+        runCatching { AppLogs.chatLog(context).appendText(line.toString() + "\n") }
+        AppLogs.activity("feedback: ${if (good) "right" else "WRONG"} for \"${turn.user}\"")
+    }
 
     fun setGuard(id: Long, why: String?) = _turns.update { list -> list.map { if (it.id == id) it.copy(guard = why) else it } }
 

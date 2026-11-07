@@ -18,9 +18,9 @@ object CommandGuard {
         data class Call(val call: FunctionCall, override val why: String, val note: String? = null) : Route
     }
 
-    const val CAPABILITIES = "I can set alarms and timers, remind you of things, call or message your contacts, " +
-        "turn the flashlight on or off, change the volume, turn on do not disturb, control your music, and open apps. " +
-        "For example, say: set an alarm for 7 am."
+    const val CAPABILITIES = "I can set alarms, timers and reminders, call or message your contacts, also on WhatsApp, " +
+        "play music and videos, give directions, search the web, control the flashlight, volume and do not disturb, " +
+        "and open apps or the camera. You can ask for two things at once. For example: play Arijit Singh on YouTube."
     private val NOT_CAUGHT = ActionResult(false, "Sorry, I didn't catch that.")
 
     private val TOKEN = Regex("""\S+""")
@@ -33,7 +33,7 @@ object CommandGuard {
     private const val MAX_WORDS = 30
 
     private val HELP = Regex(
-        """\bwhat (all )?(can|could|do) you do\b|\byou can do\b|\bwhat are (the |all )?(tasks|things|commands|features)\b|""" +
+        """\bwhat (all |else )?(can|could|do) you do\b|\byou can do\b|\bwhat else can you\b|\bwhat are (the |all )?(tasks|things|commands|features)\b|""" +
             """\bwhat (all )?can i (say|ask)\b|\bhow (do|can) i use you\b|^help( me)?$""",
     )
     private val TIMER_CONTROL = Regex("""\b(pause|resume|stop|cancel|restart|reset|delete)\b.*\btimers?\b|\btimers?\b.*\b(pause|resume|stop|cancel)\b""")
@@ -62,7 +62,7 @@ object CommandGuard {
         if (tokens.size == 1 && tokens[0] !in ONE_WORD) return Route.Answer(NOT_CAUGHT, "single unknown word")
         if (HELP.containsMatchIn(t)) return Route.Answer(ActionResult(true, CAPABILITIES), "help")
         if (TIMER_CONTROL.containsMatchIn(t)) {
-            return Route.Call(FunctionCall("show_timers", emptyList()), "timer control", "I can't pause or cancel timers yet, so I'm opening your timers.")
+            return Route.Call(FunctionCall("show_timers", emptyList()), "timer control", "Here are your timers.")
         }
         return null
     }
@@ -118,7 +118,7 @@ object CommandGuard {
             if (single && call.name != "open_app" && call.name !in DEEP_LINKS) {
                 val app = stripPunct(m.groupValues[1])
                 return Route.Call(FunctionCall("open_app", listOf("app" to app)), "composite",
-                    "I can't do things inside apps yet, so I'm just opening ${title(app)}.")
+                    "Opening ${title(app)} for you.")
             }
         }
 
@@ -128,6 +128,31 @@ object CommandGuard {
             if (!grounded(v, t)) return Route.Answer(NOT_CAUGHT, "$arg '$v' not said")
         }
         return Route.Call(call, "model")
+    }
+
+    // A factual question the model has no function for ("what is the weather today"): searching beats "can't help".
+    // Not chit-chat about the assistant or the user ("how are you", "what are you doing").
+    private val QUESTION = Regex("""^(what|what's|whats|who|who's|when|where|which|how|why|is|are|will|does|did|can)\b""")
+    // Requests for information that mention "me" but aren't about the user ("tell me about the Eiffel tower").
+    private val LOOKUP = Regex("""^(tell me about|tell me the|explain|define|meaning of|how to|search for|look up|show me the)\b""")
+    // Lookups even when ASR drops the question word ("Happened to U. S. economy" for "What happened to...").
+    private val TOPIC = Regex("""\b(happened|happening|news|weather|forecast|score|scores|price|prices|rate|rates|latest|results?|update|updates|stock|election|elections|economy|capital of|population|distance)\b""")
+    private val PERSONAL = Regex("""\b(you|your|yours|i|i'm|me|my|mine)\b""")
+    // ASR's rendering of the wake word's tail before the question ("Which what is the weather today").
+    private val RESIDUE = Regex("""^(which|wich|it's|its|is|okay|ok|and|a|he|edge)[,.]?\s+(?=(what|who|when|where|which|how|why|tell|explain|define)\b)""")
+
+    /** When the model made no call: search the web for a real question, else the usual "can't help". */
+    fun noCall(text: String): Route {
+        val t = RESIDUE.replace(norm(text).trimEnd('.', '?', '!'), "")
+        val words = TOKEN.findAll(t).count()
+        // "?" or "!" mid-text means several sentences, usually background speech; "." can be an abbreviation ("u.s.").
+        val oneSentence = !Regex("""[?!]\s""").containsMatchIn(t)
+        val asks = LOOKUP.containsMatchIn(t) || ((QUESTION.containsMatchIn(t) || TOPIC.containsMatchIn(t)) && !PERSONAL.containsMatchIn(t))
+        if (asks && words >= 3 && oneSentence) {
+            return Route.Call(FunctionCall("web_search", listOf("query" to t)), "question -> web search",
+                "Let me look that up on Google for you.")
+        }
+        return Route.Answer(ActionResult(false, "I'm not sure how to help with that one. Try asking \"what can you do?\""), "no call")
     }
 
     /** Allowed values per function and argument, from functions.json. */

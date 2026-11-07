@@ -11,7 +11,15 @@ import com.edgeai.assistant.CommandGuard.Route
  */
 object CommandRunner {
     fun run(context: Context, text: String, fromVoice: Boolean, execute: Boolean) {
-        val app = context.applicationContext
+        AssistantState.thinking.value = true
+        try {
+            runCommand(context.applicationContext, text, fromVoice, execute)
+        } finally {
+            AssistantState.thinking.value = false
+        }
+    }
+
+    private fun runCommand(app: Context, text: String, fromVoice: Boolean, execute: Boolean) {
         val pre = CommandGuard.beforeModel(text)
         val turn: ChatTurn
         val routes: List<Route>
@@ -21,13 +29,18 @@ object CommandRunner {
         } else {
             if (!awaitModel(app)) {
                 AppLogs.activity("model not ready for: \"$text\" (${LlmServer.state.value})")
-                if (execute) Speaker.speak(app, "I'm still getting ready. Please try again in a moment.")
+                val say = if (LlmServer.state.value is LlmServer.State.Failed) "My command model isn't working on this phone. Please share the logs from Settings."
+                else "I'm still getting ready. Please try again in a moment."
+                // Shown in the conversation too, so a typed command never just disappears.
+                val turn = LlmChat.record(text, fromVoice, "model not ready")
+                LlmChat.setAction(turn.id, ActionResult(false, say))
+                if (execute) Speaker.speak(app, say)
                 return
             }
             val t = LlmChat.send(app, text, fromVoice)
             routes = when {
                 t.error != null -> listOf(Route.Answer(ActionResult(false, "Sorry, something went wrong."), "error"))
-                t.calls.isEmpty() -> listOf(Route.Answer(ActionResult(false, "Sorry, I can't help with that."), "no call"))
+                t.calls.isEmpty() -> listOf(CommandGuard.noCall(text))
                 else -> t.calls.map { CommandGuard.afterModel(text, it, LlmChat.enums(app), single = t.calls.size == 1) }
             }
             val why = routes.map { it.why }.filter { it != "model" && it != "no call" && it != "error" }.joinToString("; ").ifEmpty { null }

@@ -26,10 +26,11 @@ object DeepLinks {
     }
 
     const val MAPS = "com.google.android.apps.maps"
+    const val GOOGLE_APP = "com.google.android.googlequicksearchbox"
     const val PLAY_STORE = "com.android.vending"
 
-    /** Music apps that take a "play this" request, in the order tried when the user names none. */
-    val PLAY_FROM_SEARCH_ORDER = listOf(MediaApp.YOUTUBE_MUSIC, MediaApp.SPOTIFY, MediaApp.JIOSAAVN, MediaApp.GAANA, MediaApp.WYNK, MediaApp.AMAZON_MUSIC)
+    /** When the user names no app ("play Kesariya"): the ones we can start playback in, then YouTube in the browser. */
+    val PLAY_FROM_SEARCH_ORDER = listOf(MediaApp.YOUTUBE_MUSIC, MediaApp.YOUTUBE)
 
     private val mediaNames = mapOf(
         "YouTube" to MediaApp.YOUTUBE, "YouTube Music" to MediaApp.YOUTUBE_MUSIC, "YT Music" to MediaApp.YOUTUBE_MUSIC,
@@ -49,6 +50,8 @@ object DeepLinks {
 
     fun youtubeSearch(query: String) = "https://www.youtube.com/results?search_query=${enc(query)}"
     fun youtubeMusicSearch(query: String) = "https://music.youtube.com/search?q=${enc(query)}"
+    fun youtubeWatch(videoId: String) = "https://www.youtube.com/watch?v=$videoId"
+    fun youtubeMusicWatch(videoId: String) = "https://music.youtube.com/watch?v=$videoId"
     fun spotifySearch(query: String) = "spotify:search:${enc(query)}"
     fun googleSearch(query: String) = "https://www.google.com/search?q=${enc(query)}"
     fun navigation(destination: String) = "google.navigation:q=${enc(destination)}"

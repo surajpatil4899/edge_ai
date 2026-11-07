@@ -30,7 +30,7 @@
 {"text": "Next song", "source": "clean", "expect": {"name": "media_control", "args": {"action": "next"}}}
 {"text": "Play music", "source": "clean", "expect": {"name": "media_control", "args": {"action": "play"}}}
 {"text": "Open WhatsApp", "source": "clean", "expect": {"name": "open_app", "args": {"app": "WhatsApp"}}}
-{"text": "Open the camera", "source": "clean", "expect": {"name": "open_app", "args": {"app": "camera"}}}
+{"text": "Open the camera", "source": "clean", "expect": {"name": "camera", "args": {"mode": "photo"}}}
 {"text": "Stop the alarm", "source": "clean", "expect": {"name": "dismiss_alarm", "args": {"action": "dismiss"}}}
 {"text": "Snooze", "source": "clean", "expect": {"name": "dismiss_alarm", "args": {"action": "snooze"}}}
 {"text": "Set a alarm for 6 a.m", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 a.m"}}}
@@ -49,7 +49,7 @@
 {"text": "Remind me to buy milk at six p. m.", "source": "asr_real", "expect": {"name": "create_reminder", "args": {"text": "buy milk", "time": "six p. m."}}}
 {"text": "Set alarm for 6 am.", "source": "asr_real", "expect": {"name": "set_alarm", "args": {"time": "6 am"}}}
 {"text": "Is timer for 5 minutes", "source": "asr_synthetic", "expect": {"name": "set_timer", "args": {"duration": "5 minutes"}}}
-{"text": "It's open camera", "source": "asr_synthetic", "expect": {"name": "open_app", "args": {"app": "camera"}}}
+{"text": "It's open camera", "source": "asr_synthetic", "expect": {"name": "camera", "args": {"mode": "photo"}}}
 {"text": "Turn of the torch", "source": "asr_synthetic", "expect": {"name": "set_flashlight", "args": {"state": "off"}}}
 {"text": "Pass the music", "source": "asr_synthetic", "expect": {"name": "media_control", "args": {"action": "pause"}}}
 {"text": "Send message to mom saying coming home", "source": "asr_synthetic", "expect": {"name": "send_message", "args": {"contact": "mom", "message": "coming home"}}}

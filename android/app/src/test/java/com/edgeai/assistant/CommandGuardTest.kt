@@ -41,6 +41,28 @@ class CommandGuardTest {
     }
 
     @Test
+    fun questionsWithoutAFunctionBecomeASearch() {
+        assertEquals(call("web_search", "query" to "what is the weather today"), ran(CommandGuard.noCall("What is the weather today")))
+        assertEquals("web_search", ran(CommandGuard.noCall("Who is the prime minister of India?")).name)
+        answered(CommandGuard.noCall("What are you doing"))                      // chit-chat
+        answered(CommandGuard.noCall("How are you"))
+        answered(CommandGuard.noCall("What is this? Tina. What is this? Tina is a very excellent"))  // background speech
+        answered(CommandGuard.noCall("That's not plastic"))
+        // phone, 7 Nov: abbreviations are not sentence breaks; the wake word's "Which" is not part of the query
+        assertEquals("web_search", ran(CommandGuard.noCall("What happened to the recent u.s. metamolexia")).name)
+        assertEquals(call("web_search", "query" to "what is the weather today"), ran(CommandGuard.noCall("Which what is the weather today")))
+        assertEquals("web_search", ran(CommandGuard.noCall("Tell me about the Eiffel tower")).name)
+        assertEquals("web_search", ran(CommandGuard.noCall("How to make masala chai")).name)
+        answered(CommandGuard.noCall("Tell me a joke"))
+        // phone, 7 Nov: ASR dropped "What"
+        assertEquals(call("web_search", "query" to "happened to u. s. economy"), ran(CommandGuard.noCall("Happened to U. S. economy")))
+        assertEquals("web_search", ran(CommandGuard.noCall("Cricket score today")).name)
+        answered(CommandGuard.noCall("I checked my score"))                      // about the user
+        answered(CommandGuard.noCall("Do it work"))
+        assertEquals(CommandGuard.CAPABILITIES, (CommandGuard.beforeModel("What else can you do") as Route.Answer).result.say)
+    }
+
+    @Test
     fun timerControlOpensTimers() {
         assertEquals("show_timers", ((CommandGuard.beforeModel("Pause the timer")) as Route.Call).call.name)
     }
